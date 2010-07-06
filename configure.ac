@@ -6,7 +6,7 @@ AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 
-GST_PACKAGE_ENABLE([Jit], [.])
+GST_PACKAGE_ENABLE([Jit], [gst-jit])
 
 AM_PATH_GST([3.2])
 
