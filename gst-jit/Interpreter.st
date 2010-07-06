@@ -4,10 +4,38 @@ Object subclass: Interpreter [
     "I am an abstract interpreter.
      I interpret low level instruction like push pop ..."
 
-    pushTemp: index [
-	self sublclassResponssability
+    jumpTo: [
+    ]
+   
+    popStackTop [
+    ]
+ 
+    pushLiteral [
     ]
 
+    pushInstanceVariable: anIndex [
+    ]
+
+    pushTemporary: anIndex [
+	self subclassResponssability
+    ]
+
+    returnFromContext [
+    ]
+
+    returnFromMethod [
+    ]
+
+    send [
+    ]
+
+    storeInstanceVariable: anIndex [
+	self subclassResponssability
+    ]
+
+    storeTemporaryVariable: anIndex [
+	self subclassResponssability
+    ]
 ]
 
 Interpreter subclass: LightningInterpreter [
