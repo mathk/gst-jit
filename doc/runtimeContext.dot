@@ -17,5 +17,5 @@ digraph G {
   		label = "{ <head> MethodContext | <parent> parent \l| nativeIP \l | ip \l| sp \l| receiver \l| method  \l|  flags \l| Temp Var 1 \l Temp Var 2 \l ... \l Temp Var n \l| Stack \l ... \l Stack \l }"
 	];
 
-	MethodContext:parent -> MethodContext:head [tailport=e];
+	MethodContext:parent:e -> MethodContext:head;
 }
