@@ -1,30 +1,30 @@
 digraph G {
-        fontname = "Bitstream Vera Sans"
-        fontsize = 8
+        fontname = "Bitstream Vera Sans";
+        fontsize = 8;
 
         node [
                 fontname = "Bitstream Vera Sans"
                 fontsize = 8
                 shape = "record"
-        ]
+        ];
 
         edge [
                 fontname = "Bitstream Vera Sans"
                 fontsize = 8
-        ]
+        ];
 
 	ContextPart [
   		label = "{ContextPart | parent \l nativeIP \l ip \l sp \lreceiver \l method }"
-	]
+	];
 
 	MethodContext [
   		label = "{MethodContext | flags \l| Temp Var 1 \l Temp Var 2 \l ... \l Temp Var n \l| Stack \l ... \l Stack \l }"
-	]
+	];
 
 	BlockContext [
   		label = "{BlockContext | outerContext \l| Temp Var 1 \l Temp Var 2 \l ... \l Temp Var n \l| Stack \l ... \l Stack \l }"
-	]
+	];
 
-	MethodContext -> ContextPart
-	BlockContext -> ContextPart
+	MethodContext -> ContextPart;
+	BlockContext -> ContextPart;
 }

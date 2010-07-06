@@ -1,0 +1,21 @@
+digraph G {
+	fontname = "Bitstream Vera Sans";
+	fontsize = 8;
+
+    node [
+		 fontname = "Bitstream Vera Sans"
+		 fontsize = 8
+		 shape = "record"
+   ];
+
+   edge [
+   		fontname = "Bitstream Vera Sans"
+       	fontsize = 8
+   ];
+
+   MethodContext [
+  		label = "{ <head> MethodContext | <parent> parent \l| nativeIP \l | ip \l| sp \l| receiver \l| method  \l|  flags \l| Temp Var 1 \l Temp Var 2 \l ... \l Temp Var n \l| Stack \l ... \l Stack \l }"
+	];
+
+	MethodContext:parent -> MethodContext:head [tailport=e];
+}
