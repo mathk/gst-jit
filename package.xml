@@ -1,5 +1,10 @@
 <package>
   <name>Jit</name>
   <namespace>Jit</namespace>
-
+  <prereq>Parser</prereq>
+  <prereq>Lightning</prereq>
+  <filein>Translator.st</filein>
+  <filein>ScopeChecker.st</filein>
+  <file>Translator.st</file>
+  <file>ScopeChecker.st</file>
 </package>
