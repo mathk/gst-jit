@@ -1,7 +1,7 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
 STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
-    | bindings |
+    | scope |
 
     initialize [
 	<category: 'initialize-release'>
