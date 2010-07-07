@@ -9,8 +9,16 @@ STInST.RBProgramNodeVisitor subclass: Translater [
     ]
 
     acceptMethodNode: aMethodNode [
-	 <category: 'visitor-double dispatching'>
-	 super acceptMethodNode: aMethodNode
+	<category: 'visitor-double dispatching'>
+	
+	" Prepare the context and initialize it:
+	    - call activate_new_context
+	    - call prepare_context "
+	super acceptMethodNode: aMethodNode.
+
+	jiState
+	    activateNewContext;
+	    prepareContext
     ]
 
     acceptAssignmentNode: aAssignmentNode [

@@ -29,6 +29,8 @@ TestCase subclass: ScopeCheckerTest [
 	self assert: (checker scope hasSlotNamed: 'a').
 	self assert: (checker scope hasSlotNamed: 'b').
 	self assert: (checker scope hasSlotNamed: 'c').
+	self shouldnt: [ checker scope hasSlotNamed: 'd' ] raise: MessageNotUnderstood.
+	self should: [ checker scope lookup: 'd' ] raise: SystemExceptions.NotFound.
 
 	checker := ScopeChecker visitMethod: (STInST.RBParser parseMethod: 'foo: d a send: b') in: A.
 	self assert: (checker scope hasSlotNamed: 'a').
@@ -44,7 +46,20 @@ TestCase subclass: ScopeCheckerTest [
         self assert: (checker scope hasSlotNamed: 'e').
         self assert: (checker scope hasSlotNamed: 'f').
 
-	checker := ScopeChecker visitMethod: (STInST.RBParser parseMethod: 'foo: d | e f | a send: b. [ :x :y | | l s | ] ') in: A.
+	checker := ScopeChecker visitMethod: (STInST.RBParser parseMethod: 'foo: d | e f | 
+	    a send: b.
+	    [ :x :y | x msg. y msg ] ') in: A.
+
+	checker := ScopeChecker visitMethod: (STInST.RBParser parseMethod: 'foo: d | e f | 
+	    a send: b. 
+	    [ :x :y | | l s | l msg. s msg. x msg. y msg ] ') in: A.
+
+	self should: [
+	    ScopeChecker visitMethod: (STInST.RBParser parseMethod: 'foo: d | e f | 
+		a send: b. 
+		[ :x :y | | l s | 
+		    [ :l :s | l msg. s msg. x msg. y msg ]  ]. 
+		[ x msg. l msg ]') in: A ] raise: Exception
     ]
 ]
 
