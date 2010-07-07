@@ -58,22 +58,26 @@ Object subclass: Scope [
 ]
 
 Scope subclass: ContextScope [
+    | usedBinding |
     "I am a scope for every bindings that is inside a context.
      That is arguments and temporaries"
 
     ContextScope class >> defaultSlotClass [
 	^ContextSlot
     ]
-    
-    createSlot [
-	<category: 'private creation'>
-	^self defaultSlotClass for: self 
-			       at: self bindings size
+
+    usedBinding [
+	^usedBinding ifNil: [usedBinding := Set new]
     ]
 
-    bind: aVariableNode [
-	aVariableNode slot: self createSlot.
-	self bindings at: aVariableNode name put: aVariableNode slot
+    assignOffset: aVariableNode [
+	"We only assign an offset to temp that it is used"
+	(self lookup: aVariableNode name) assignOffset.
+	self usedBinding add: aVariableNode name
+    ]
+
+    nextOffset [
+	^self usedBinding size
     ]
 ]
 
@@ -153,16 +157,15 @@ Object subclass: Slot [
 	<category: 'accessing'>
 	scope := aScope
     ]
+
+    assignOffset [
+	"For those who need to capture an offset"
+    ]
 ]
     
 Slot subclass: ContextSlot [
     "I am a slote inside context scope"
     | offset |
-
-    ContextSlot class >> for: aScope at: anOffset [
-	^(self for: aScope)
-	    offset: anOffset
-    ]
 
     emitPush: anInterpreter [
 	anInterpreter pushTemp: self index
@@ -171,9 +174,9 @@ Slot subclass: ContextSlot [
     offset [
 	offset
     ]
-
-    offset: anOffset [
-	offset := anOffset
+    
+    assignOffset [
+	offset := self scope nextOffset
     ]
 ]
 
