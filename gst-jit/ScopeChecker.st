@@ -9,12 +9,6 @@ STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
 	    yourself
     ]
 
-    initialize [
-	<category: 'initialize-release'>
-	"Initialize the scope. First binding should be self"
-	scope ":= *continue here*" 
-    ]
-
     scope: aScope [
 	<category: 'accessing'>
 	scope := aScope
@@ -22,5 +16,19 @@ STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
 
     acceptClassNode: aClass [
 	<category: 'visitor-double dispatching'>
+    ]
+
+    acceptMethodNode: aMethodNode [
+	<category: 'visitor-double dispatching'>
+	scope := ContextScope attachedTo: scope.
+	super acceptMethodNode: aMethodNode
+    ]
+
+    acceptSequenceNode: aSequenceNode [
+	<category: 'visitor-double dispatching'>
+	aSequenceNode temporaries do: [:each |
+	    scope bind: each name
+	].
+	super acceptSequenceNode: aSequenceNode
     ]
 ]
