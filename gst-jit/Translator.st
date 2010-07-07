@@ -1,7 +1,19 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
 STInST.RBProgramNodeVisitor subclass: Translater [
-    | jitState |
+    | interpreter |
+
+    Translater class >> visitNode: aNode interpret: anInterpreter [
+	<category: 'instance-creation'>
+	^(self new)
+	     interpreter: anInterpreter;
+	     visitNode: aNode;
+	     yourself
+    ]
+
+    interpreter: anInterpreter [
+	interpreter := anInterpreter
+    ]
 
     initialize [
 	<category: 'initialize-release'>
@@ -31,6 +43,7 @@ STInST.RBProgramNodeVisitor subclass: Translater [
 
     acceptVariableNode: aVariableNode [
 	<category: 'visitor-double dispatching'>
-	"Push the variable on the stack context" 
+	"Push the variable on the stack context"
+	interpreter pushTemp: aVariableNode slot offset "Fix me"
     ]
  ]
