@@ -1,7 +1,8 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
-STInST.RBProgramNodeVisitor sublcass: Translater [
+STInST.RBProgramNodeVisitor subclass: Translater [
     | jitState |
+
     initialize [
 	<category: 'initialize-release'>
 	jitState := Lightning.CJitState new

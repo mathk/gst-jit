@@ -3,10 +3,15 @@
 STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
     | scope |
 
-    ScopeChecker class >> visiteMethod: aNode in: aClass [
+    ScopeChecker class >> visitMethod: aNode in: aClass [
 	^(self new) 
 	    scope: aClass scope;
+	    visitNode: aNode;
 	    yourself
+    ]
+
+    scope [
+	^scope
     ]
 
     scope: aScope [
@@ -30,5 +35,10 @@ STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
 	    scope bind: each name
 	].
 	super acceptSequenceNode: aSequenceNode
+    ]
+
+    acceptVariableNode: aVariableNode [
+	<category: 'visitor-double dispatching'>
+	scope lookup: aVariableNode name
     ]
 ]

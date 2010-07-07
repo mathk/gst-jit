@@ -81,6 +81,7 @@ Scope subclass: ClassScope [
 
     lookup: name [
 	"To be define"
+	self error: 'ivar are not lookup for the time being.'
     ]
 ]
 
@@ -88,13 +89,13 @@ Scope subclass: GlobalScope [
     "I am a scope for binding outside of the class.
      Manly for class name and other global variable"
 
-    uniqueInstance := self basicNew.
+    uniqueInstance := GlobalScope basicNew.
 
     GlobalScope class >> new [
 	self error: 'This is a singleton use #uniqueInstance'
     ]
 
-    GlobalSCope class >> uniqueInstance [
+    GlobalScope class >> uniqueInstance [
 	^uniqueInstance
     ]
 ]
@@ -102,7 +103,7 @@ Scope subclass: GlobalScope [
 Object subclass: Slot [
     | name scope |
 
-    UndefinedSlot := self new.
+    UndefinedSlot := Slot new.
 	
     Slot class >> for: scope [
 	^(self new)
@@ -155,6 +156,6 @@ Slot subclass: ContextSlot [
 
 Class extend [
     scope [
-	^ClassScope for: self
+	^Jit.ClassScope for: self
     ]
 ]

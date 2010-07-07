@@ -4,7 +4,7 @@ Object subclass: Interpreter [
     "I am an abstract interpreter.
      I interpret low level instruction like push pop ..."
 
-    jumpTo: [
+    jumpTo: label [
     ]
    
     popStackTop [
@@ -16,7 +16,7 @@ Object subclass: Interpreter [
     pushInstanceVariable: anIndex [
     ]
 
-    pushTemporary: anIndex [
+    pushTemporary: anOffset [
 	self subclassResponssability
     ]
 
@@ -33,7 +33,7 @@ Object subclass: Interpreter [
 	self subclassResponssability
     ]
 
-    storeTemporaryVariable: anIndex [
+    storeTemporaryVariable: anOffset [
 	self subclassResponssability
     ]
 ]
@@ -45,7 +45,7 @@ Interpreter subclass: LightningInterpreter [
 	^state isNil ifTrue: [state := Lightning.CJitState new]
     ]
 
-    pushTemp: index [
+    pushTemp: anOffset [
 	state move 
 	"Here we:
 	 1) fetch the context
