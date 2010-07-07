@@ -15,11 +15,13 @@
   </test>
 
   <filein>Translator.st</filein>
+  <filein>RBExtend.st</filein>
   <filein>Interpreter.st</filein>
   <filein>ScopeChecker.st</filein>
   <filein>Scope.st</filein>
 
   <file>Translator.st</file>
+  <file>RBExtend.st</file>
   <file>Interpreter.st</file>
   <file>ScopeChecker.st</file>
   <file>Scope.st</file>

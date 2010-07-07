@@ -17,7 +17,6 @@ STInST.RBProgramNodeVisitor subclass: Translater [
 
     initialize [
 	<category: 'initialize-release'>
-	jitState := Lightning.CJitState new
     ]
 
     acceptMethodNode: aMethodNode [
@@ -38,12 +37,13 @@ STInST.RBProgramNodeVisitor subclass: Translater [
     acceptAssignmentNode: anAssignmentNode [
 	<category: 'visitor-double dispatching'>
 	"Store the variable into the tempSlot of the context"
-	super acceptAssignmentNode: anAssignmentNode
+	self visitNode: anAssignmentNode value
+	anAssignmentNode variable slot emitStore: interpreter
     ]
 
     acceptVariableNode: aVariableNode [
 	<category: 'visitor-double dispatching'>
 	"Push the variable on the stack context"
-	interpreter pushTemp: aVariableNode slot offset "Fix me"
+	aVariableNode slot emitPush: interpreter "Fix me how to get the slot"
     ]
  ]

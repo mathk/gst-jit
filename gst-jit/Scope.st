@@ -49,7 +49,7 @@ Object subclass: Scope [
     ]
     
     bind: name [
-	^ self bindings at: name put: self createSlot
+	self bindings at: name put: self createSlot
     ]
 
     createSlot [
@@ -69,6 +69,11 @@ Scope subclass: ContextScope [
 	<category: 'private creation'>
 	^self defaultSlotClass for: self 
 			       at: self bindings size
+    ]
+
+    bind: aVariableNode [
+	aVariableNode slot: self createSlot.
+	self bindings at: aVariableNode name put: aVariableNode slot
     ]
 ]
 
@@ -108,7 +113,7 @@ Scope subclass: GlobalScope [
     ]
 
     GlobalScope class >> uniqueInstance [
-	^ uniqueInstance ifNil: [ uniqueInstance := GlobalScope basicNew ]
+	^ uniqueInstance ifNil: [ uniqueInstance := self basicNew ]
     ]
 
     hasSlotNamed: aString [
