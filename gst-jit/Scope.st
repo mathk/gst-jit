@@ -22,32 +22,38 @@ Object subclass: Scope [
     
     bindings [
 	<category: 'accessing'>
-	bindings isNil ifTrue: [bindings := Dictionary new].
-	^bindings
+
+	^ bindings ifNil: [ bindings := Dictionary new ].
     ]
 
     parentScope [
 	<category: 'accessing'>
-	^parentScope
+
+	^ parentScope
     ]
 	
     parentScope: aScope [
 	<category: 'accessing'>
 	parentScope := aScope
     ]
-    
+   
+    hasSlotNamed: aString [
+	<category: 'testing'>
+
+	(self bindings includesKey: aString) ifTrue: [ ^ true ].
+	^ self parentScope hasSlotNamed: aString
+    ]
+ 
     lookup: name [
-	^self bindings at: name 
-		       ifAbsent: [self parentScope lookup: name]
+	^ self bindings at: name ifAbsent: [ self parentScope lookup: name ]
     ]
     
     bind: name [
-	^self bindings at: name 
-		       put: self createSlot
+	^ self bindings at: name put: self createSlot
     ]
 
     createSlot [
-	^self defaultSlotClass for: self
+	^ self defaultSlotClass for: self
     ]
 ]
 
@@ -66,23 +72,28 @@ Scope subclass: ContextScope [
     ]
 ]
 
-Scope subclass: ClassScope [
+Scope subclass: BehaviorScope [
     "I am a scope for bindings inside the class.
      This is instance and class variables"
+
     | behavior |
-    ClassScope class >> for: aBehavior [
-	^(self attachedTo: GlobalScope uniqueInstance)
+
+    BehaviorScope class >> for: aBehavior [
+	^ (self attachedTo: GlobalScope uniqueInstance)
 	    behavior: aBehavior;
 	    yourself
     ]
+
+    BehaviorScope class >> defaultSlotClass [
+
+        ^ BehaviorSlot
+    ]
    
     behavior: aBehavior [
-	behavior := aBehavior
-    ]
+	behavior := aBehavior.
 
-    lookup: name [
-	"To be define"
-	self error: 'ivar are not lookup for the time being.'
+	behavior allInstVarNames do: [ :each | 
+				self  bind: each asString ]
     ]
 ]
 
@@ -90,14 +101,20 @@ Scope subclass: GlobalScope [
     "I am a scope for binding outside of the class.
      Manly for class name and other global variable"
 
-    uniqueInstance := GlobalScope basicNew.
+    uniqueInstance := nil.
 
     GlobalScope class >> new [
 	self error: 'This is a singleton use #uniqueInstance'
     ]
 
     GlobalScope class >> uniqueInstance [
-	^uniqueInstance
+	^ uniqueInstance ifNil: [ uniqueInstance := GlobalScope basicNew ]
+    ]
+
+    hasSlotNamed: aString [
+        <category: 'testing'>
+
+        ^ self bindings includesKey: aString
     ]
 ]
 
@@ -155,8 +172,11 @@ Slot subclass: ContextSlot [
     ]
 ]
 
-Class extend [
+Slot subclass: BehaviorSlot [
+]
+
+Smalltalk.Behavior extend [
     scope [
-	^Jit.ClassScope for: self
+	^ Jit.BehaviorScope for: self
     ]
 ]
