@@ -16,13 +16,14 @@ Object subclass: Scope [
 	^self subclassResponsibility
     ]
     
-    defautlSlotClass [
+    defaultSlotClass [
 	^self class defaultSlotClass
     ]
     
     bindings [
 	<category: 'accessing'>
-	^bindings isNil ifTrue: [bindings := Dictionary new]
+	bindings isNil ifTrue: [bindings := Dictionary new].
+	^bindings
     ]
 
     parentScope [
@@ -61,7 +62,7 @@ Scope subclass: ContextScope [
     createSlot [
 	<category: 'private creation'>
 	^self defaultSlotClass for: self 
-			       offset: self bindings size
+			       at: self bindings size
     ]
 ]
 
