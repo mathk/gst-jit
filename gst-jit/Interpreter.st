@@ -4,6 +4,12 @@ Object subclass: Interpreter [
     "I am an abstract interpreter.
      I interpret low level instruction like push pop ..."
 
+    methodProlog [
+    ]
+
+    methodEpilog [
+    ]
+
     jumpTo: label [
     ]
    
@@ -43,6 +49,19 @@ Interpreter subclass: LightningInterpreter [
 
     state [
 	^state isNil ifTrue: [state := Lightning.CJitState new]
+    ]
+
+    methodProlog [
+	" Prepare the context and initialize it:
+	 - call activate_new_context
+	 - call prepare_context "
+	state
+	    activateNewContext;
+	    prepareContext
+    ]
+
+    methodEpilog [
+	"Free context and return to the caller ..."
     ]
 
     pushTemp: anOffset [

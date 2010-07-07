@@ -21,15 +21,9 @@ STInST.RBProgramNodeVisitor subclass: Translater [
 
     acceptMethodNode: aMethodNode [
 	<category: 'visitor-double dispatching'>
-	
-	" Prepare the context and initialize it:
-	    - call activate_new_context
-	    - call prepare_context "
+	interpreter methodProlog.
 	super acceptMethodNode: aMethodNode.
-
-	jiState
-	    activateNewContext;
-	    prepareContext
+	interpreter methodEpilog
     ]
 
     acceptAssignmentNode: aAssignmentNode [
