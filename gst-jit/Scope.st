@@ -125,6 +125,12 @@ Scope subclass: GlobalScope [
 
         ^ self bindings includesKey: aString
     ]
+
+    lookup: name [
+	<category: 'accessing'>
+
+        ^ self bindings at: name
+    ]
 ]
 
 Object subclass: Slot [
