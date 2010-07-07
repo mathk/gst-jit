@@ -4,6 +4,16 @@
   <prereq>Parser</prereq>
   <prereq>Lightning</prereq>
 
+  <test>
+    <filein>tests/ScopeTest.st</filein>
+    <file>tests/ScopeTest.st</file>
+    <sunit>
+      Jit.ScopeTest
+      Jit.BehaviorScopeTest
+      Jit.ScopeCheckerTest
+    </sunit>
+  </test>
+
   <filein>Translator.st</filein>
   <filein>Interpreter.st</filein>
   <filein>ScopeChecker.st</filein>
