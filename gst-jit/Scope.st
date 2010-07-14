@@ -1,3 +1,4 @@
+
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
 Object subclass: Scope [	
@@ -88,7 +89,7 @@ Scope subclass: BehaviorScope [
     | behavior |
 
     BehaviorScope class >> for: aBehavior [
-	^ (self attachedTo: GlobalScope uniqueInstance)
+	^ (self attachedTo: (GlobalScope for: aBinding environment))
 	    behavior: aBehavior;
 	    yourself
     ]
@@ -109,15 +110,17 @@ Scope subclass: BehaviorScope [
 Scope subclass: GlobalScope [
     "I am a scope for binding outside of the class.
      Manly for class name and other global variable"
+    | namespace |
+   
 
-    uniqueInstance := nil.
-
-    GlobalScope class >> new [
-	self error: 'This is a singleton use #uniqueInstance'
+    GlobalScope class >> for: aNamespace [
+	^(self new)
+	    namespace: aNamespace;
+	    yourself
     ]
 
-    GlobalScope class >> uniqueInstance [
-	^ uniqueInstance ifNil: [ uniqueInstance := self basicNew ]
+    namespace: aNamespace [
+	namespace := aNamespace
     ]
 
     hasSlotNamed: aString [
@@ -128,8 +131,11 @@ Scope subclass: GlobalScope [
 
     lookup: name [
 	<category: 'accessing'>
+	start := Smalltalk.
 
-        ^ self bindings at: name
+        (name subStrings: $.) do: [ :each |
+            start := start at: each asSymbol ifAbsent: [ ^self error: 'binding not found: ', name  ] ].
+        ^start
     ]
 ]
 
@@ -187,6 +193,15 @@ Slot subclass: ContextSlot [
 ]
 
 Slot subclass: BehaviorSlot [
+    | binding |
+
+    binding [
+	^binding
+    ]
+
+    binding: aBinding [
+	binding := aBinding
+    ]
 ]
 
 Smalltalk.Behavior extend [
