@@ -50,7 +50,7 @@ Object subclass: Scope [
     ]
     
     bind: name [
-	self bindings at: name put: self createSlot
+	self bindings at: name put: ((self createSlot) name: name; yourself)
     ]
 
     createSlot [
@@ -89,7 +89,7 @@ Scope subclass: BehaviorScope [
     | behavior |
 
     BehaviorScope class >> for: aBehavior [
-	^ (self attachedTo: (GlobalScope for: aBinding environment))
+	^ (self attachedTo: (GlobalScope for: aBehavior environment))
 	    behavior: aBehavior;
 	    yourself
     ]
@@ -131,6 +131,8 @@ Scope subclass: GlobalScope [
 
     lookup: name [
 	<category: 'accessing'>
+	
+	| start |
 	start := Smalltalk.
 
         (name subStrings: $.) do: [ :each |
