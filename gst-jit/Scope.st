@@ -190,7 +190,8 @@ Slot subclass: ContextSlot [
     ]
     
     assignOffset [
-	offset := self scope nextOffset
+	offset ifNil: [
+	    offset := self scope nextOffset]
     ]
 ]
 

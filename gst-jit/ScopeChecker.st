@@ -31,8 +31,6 @@ STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
         
 	| parentScope |
 	parentScope := scope.
-        aBlockNode arguments do: [ :each |
-            scope bind: each name ].
         scope := ContextScope attachedTo: scope.
         super acceptBlockNode: aBlockNode.
 	scope := parentScope
@@ -42,21 +40,18 @@ STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
 	<category: 'visitor-double dispatching'>
 
 	scope := ContextScope attachedTo: scope.
-	aMethodNode arguments do: [ :each |
-	    scope bind: each name].
 	super acceptMethodNode: aMethodNode
-    ]
-
-    acceptSequenceNode: aSequenceNode [
-	<category: 'visitor-double dispatching'>
-
-	aSequenceNode temporaries do: [ :each |
-	    scope bind: each name ].
-	super acceptSequenceNode: aSequenceNode
     ]
 
     acceptVariableNode: aVariableNode [
 	<category: 'visitor-double dispatching'>
+
 	scope assignOffset: aVariableNode
     ]
+
+    visitArgument: aVariableNode [
+	<category: 'visiting'>
+
+	scope bind: aVariableNode name
+    ] 
 ]
