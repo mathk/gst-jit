@@ -136,7 +136,7 @@ Scope subclass: GlobalScope [
 	start := Smalltalk.
 
         (name subStrings: $.) do: [ :each |
-            start := start at: each asSymbol ifAbsent: [ ^self error: 'binding not found: ', name  ] ].
+            start := start at: each asSymbol ifAbsent: [ ^SystemExceptions.NotFound signalOn: name what: 'binding'  ] ].
         ^start
     ]
 ]
@@ -186,7 +186,7 @@ Slot subclass: ContextSlot [
     ]
     
     offset [
-	offset
+	^offset
     ]
     
     assignOffset [

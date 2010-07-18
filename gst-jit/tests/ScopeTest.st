@@ -61,5 +61,16 @@ TestCase subclass: ScopeCheckerTest [
 		    [ :l :s | l msg. s msg. x msg. y msg ]  ]. 
 		[ x msg. l msg ]') in: A ] raise: Exception
     ]
+
+    testTemparoary [
+	<category: 'testing'>
+
+	| scope |
+	scope := (ScopeChecker visitMethod: (STInST.RBParser parseMethod: 'foo | e f | e := 9') in: A) scope.
+	self assert: (scope hasSlotNamed: 'e').
+	self assert: (scope hasSlotNamed: 'f').
+	self assert: (scope lookup: 'e') offset = 0.
+	self assert: (scope lookup: 'f') offset isNil
+    ]
 ]
 
