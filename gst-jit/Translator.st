@@ -27,8 +27,8 @@ STInST.RBProgramNodeVisitor subclass: Translater [
     ]
 
     acceptAssignmentNode: aAssignmentNode [
-	 <category: 'visitor-double dispatching'>
-	 super acceptAssignmentNode: aAssignmentNode
+	<category: 'visitor-double dispatching'>
+	super acceptAssignmentNode: aAssignmentNode
     ]
 
     acceptSequenceNode: aSequenceNode [
@@ -47,5 +47,9 @@ STInST.RBProgramNodeVisitor subclass: Translater [
 	<category: 'visitor-double dispatching'>
 	"Push the variable on the stack context"
 	aVariableNode slot emitPush: interpreter "Fix me how to get the slot"
+    ]
+
+    visitArgument: aVariableNode [
+	<category: 'visiting'>
     ]
  ]

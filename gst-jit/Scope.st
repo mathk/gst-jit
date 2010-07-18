@@ -182,7 +182,11 @@ Slot subclass: ContextSlot [
     | offset |
 
     emitPush: anInterpreter [
-	anInterpreter pushTemp: self index
+	anInterpreter pushTemp: self offset
+    ]
+
+    emitStore: anInterpreter [
+	anInterpreter storeIntoTemp: self offset
     ]
     
     offset [

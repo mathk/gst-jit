@@ -13,7 +13,7 @@ Object subclass: Interpreter [
     jumpTo: label [
     ]
    
-    popStackTop [
+    pop [
     ]
  
     pushLiteral [
@@ -43,11 +43,11 @@ Object subclass: Interpreter [
     send [
     ]
 
-    storeInstanceVariable: anIndex [
+    storeIntoInstance: anIndex [
 	self subclassResponssability
     ]
 
-    storeTemporaryVariable: anOffset [
+    storeIntoTemp: anOffset [
 	self subclassResponssability
     ]
 ]
@@ -84,27 +84,24 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     methodProlog [
-	" Prepare the context and initialize it:
-	 - call activate_new_context
-	 - call prepare_context "
-	state
-	    activateNewContext;
-	    prepareContext
+	state moveI: Lightning.R0 fromP: state primGstThisContextOOP
+	
+	"Fetch the JitMethod and put it in the R1 register"
     ]
 
     methodEpilog [
+	state ret
 	"Free context and return to the caller ..."
     ]
 
-    popStackTop [
+    pop [
 	self popCount
     ]
 
     pushTemp: anOffset [
 	self pushCount
-	state move 
 	"Here we:
-	 1) fetch the context
+	 1) fetch the context Normaly it is R0
 	 2) fetch the object at TEMP_BASE + index offset in the context
 	 3) push the object ins the context at sp of the context"
     ]
@@ -133,5 +130,9 @@ Interpreter subclass: LightningInterpreter [
 
     popCount [
 	self stackCount: self stackCount - 1.
+    ]
+
+    storeIntoTemp: anOffset [
+	
     ]
 ]
