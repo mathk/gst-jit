@@ -53,6 +53,10 @@ Object subclass: Interpreter [
 ]
 
 Interpreter subclass: LightningInterpreter [
+
+    "R0 designate the MethodContext
+     R1 is the JitMethod
+     R2 can be the Stack Pointer"
     | state method stackCount currentStackCount |
 
     LightningInterpreter class >> new [
@@ -90,7 +94,6 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     methodEpilog [
-	state ret
 	"Free context and return to the caller ..."
     ]
 
