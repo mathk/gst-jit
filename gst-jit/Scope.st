@@ -1,4 +1,3 @@
-
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
 Object subclass: Scope [	
@@ -72,8 +71,12 @@ Scope subclass: ContextScope [
     ]
 
     assignOffset: aVariableNode [
+	| slot |
 	"We only assign an offset to temp that it is used"
-	(self lookup: aVariableNode name) assignOffset.
+	slot := (self lookup: aVariableNode name)
+	    assignOffset;
+	    yourself.
+	aVariableNode slot: slot.
 	self usedBinding add: aVariableNode name
     ]
 

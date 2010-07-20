@@ -6,11 +6,14 @@
 
   <test>
     <filein>tests/ScopeTest.st</filein>
+	<filein>tests/TranslatorTest.st</filein>
     <file>tests/ScopeTest.st</file>
+    <file>tests/TranslatorTest.st</file>
     <sunit>
       Jit.ScopeTest
       Jit.BehaviorScopeTest
       Jit.ScopeCheckerTest
+	  Jit.TranslatorTest
     </sunit>
   </test>
 

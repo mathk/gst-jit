@@ -1,9 +1,9 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
-STInST.RBProgramNodeVisitor subclass: Translater [
+STInST.RBProgramNodeVisitor subclass: Translator [
     | interpreter |
 
-    Translater class >> visitNode: aNode interpret: anInterpreter [
+    Translator class >> visitNode: aNode interpret: anInterpreter [
 	<category: 'instance-creation'>
 	^(self new)
 	     interpreter: anInterpreter;
@@ -18,7 +18,7 @@ STInST.RBProgramNodeVisitor subclass: Translater [
     initialize [
 	<category: 'initialize-release'>
     ]
-
+ 
     acceptMethodNode: aMethodNode [
 	<category: 'visitor-double dispatching'>
 	interpreter methodProlog.
@@ -39,7 +39,7 @@ STInST.RBProgramNodeVisitor subclass: Translater [
     acceptAssignmentNode: anAssignmentNode [
 	<category: 'visitor-double dispatching'>
 	"Store the variable into the tempSlot of the context"
-	self visitNode: anAssignmentNode value
+	self visitNode: anAssignmentNode value.
 	anAssignmentNode variable slot emitStore: interpreter
     ]
 

@@ -24,3 +24,10 @@ STInST.RBProgramNode extend [
 	^properties ifNil: [properties := Dictionary new].
     ]
  ]
+
+STInST.RBMethodNode extend [
+    
+    checkScopeIn: aBehavior [
+	ScopeChecker visitMethod: self in: aBehavior.
+    ]
+]

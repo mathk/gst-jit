@@ -2,9 +2,6 @@
 #
 ACLOCAL_AMFLAGS = -I m4 -I /usr/local/share/aclocal
 
-
-gstdatadir=$(datadir)/smalltalk
-
 DISTCLEANFILES = pkgrules.tmp
 all-local:
 clean-local::

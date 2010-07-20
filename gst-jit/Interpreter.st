@@ -84,11 +84,11 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     state [
-	^state isNil ifTrue: [state := Lightning.CJitState new]
+	^state ifNil: [state := Lightning.CJitState new]
     ]
 
     methodProlog [
-	state moveI: Lightning.R0 fromP: state primGstThisContextOOP
+	self state movI: Lightning.R0 fromUI: Lightning.CJitState primGstThisContextOOP
 	
 	"Fetch the JitMethod and put it in the R1 register"
     ]
