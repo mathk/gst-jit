@@ -14,8 +14,9 @@ digraph G {
    ];
 
    MethodContext [
-  		label = "{ <head> MethodContext | <parent> parent \l| nativeIP \l | ip \l| sp \l| receiver \l| method  \l|  flags \l| Temp Var 1 \l Temp Var 2 \l ... \l Temp Var n \l| Stack \l ... \l Stack \l }"
+  		label = "{ <head> MethodContext | <parent> parent \l| nativeIP \l | ip \l| <sp> sp \l| receiver \l| method  \l|  flags \l | Arg 1 \l Arg 2 \l ... \l Arg n \l | Temp Var 1 \l Temp Var 2 \l ... \l Temp Var n \l | <stack> Stack \l  ... \l Stack \l }"
 	];
 
 	MethodContext:parent:e -> MethodContext:head;
+	MethodContext:sp:w -> MethodContext:stack:w;
 }
