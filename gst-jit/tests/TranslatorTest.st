@@ -6,7 +6,7 @@ TestCase subclass: TranslatorTest [
 	| node |
 	
 	setUp [
-		node := (STInST.RBParser parseMethod: 'foo | e | e := 12')
+		node := (STInST.RBParser parseMethod: 'foo | e d | e := 12. d:= e')
 		             checkScopeIn: A.
 	]
 
@@ -15,7 +15,7 @@ TestCase subclass: TranslatorTest [
 		| ligtningInterp |
 		ligtningInterp := LightningInterpreter new.
 		Translator visitNode: node interpret: ligtningInterp.
-		ligtningInterp state assemble
+		ligtningInterp state assemble; dump: 'assemblTest'
 		
 	]
 ]

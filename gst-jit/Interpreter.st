@@ -102,7 +102,15 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     pushTemp: anOffset [
-	self pushCount
+	self state 
+            loadIm: Lightning.R1 
+	    with: Lightning.R0 
+	    fromI: 4;
+	    loadIm: Lightning.R2 
+	    with: Lightning.R0 
+	    fromI: (method tempOffset: anOffset).
+	    "store R2 in stack *(R0 + R1)"
+
 	"Here we:
 	 1) fetch the context Normaly it is R0
 	 2) fetch the object at TEMP_BASE + index offset in the context
