@@ -1,26 +1,32 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
-
 STInST.RBProgramNodeVisitor subclass: Translator [
-    | interpreter |
-
-    Translator class >> visitNode: aNode interpret: anInterpreter [
+    | interp interpClass |
+		
+    Translator class >> visitNode: aNode interpretOn: interpreterClass  [
 	<category: 'instance-creation'>
 	^(self new)
-	     interpreter: anInterpreter;
+	     interpClass: interpreterClass;
 	     visitNode: aNode;
-	     yourself
+	     yourself.
     ]
 
-    interpreter: anInterpreter [
-	interpreter := anInterpreter
+    interpClass: aClass [
+	interpClass := aClass.
     ]
 
     initialize [
 	<category: 'initialize-release'>
     ]
+
+    interp [
+	^interp
+    ]
  
     acceptMethodNode: aMethodNode [
 	<category: 'visitor-double dispatching'>
+	| method |
+	method := JitMethod new. "set arg and temp size"
+	interp := interpClass new. "set the jitMethod"
 	interpreter methodProlog.
 	super acceptMethodNode: aMethodNode.
 	interpreter methodEpilog
