@@ -103,12 +103,21 @@ Interpreter subclass: LightningInterpreter [
 
     pushTemp: anOffset [
 	self state 
-            loadIm: Lightning.R1 
-	    with: Lightning.R0 
-	    fromI: 4;
-	    loadIm: Lightning.R2 
-	    with: Lightning.R0 
-	    fromI: (method tempOffset: anOffset).
+            loadUI: Lightning.R1 "SP"
+	    fromReg: Lightning.R0 
+	    im: 4;
+	    loadI: Lightning.R2 
+	    fromReg: Lightning.R0 
+	    im: 5"(method tempOffset: anOffset)";
+	    addI: Lightning.R1 to: Lightning.R1 int: 1.
+	    "store sp"
+	    " TEST loadC: Lightning.R1 fromReg: Lightning.R0 and: Lightning.R2;
+	    loadD: Lightning.R0 im: 1.0;
+	    loadUI: Lightning.R0 im: 42;
+	    loadUS: Lightning.R0 fromReg: Lightning.R1 im: 1;
+	    movI: Lightning.R0 fromUI: 4;
+	    loadUI: Lightning.R0 im: 4."
+	    
 	    "store R2 in stack *(R0 + R1)"
 
 	"Here we:
