@@ -40,7 +40,8 @@ STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
 	<category: 'visitor-double dispatching'>
 
 	scope := ContextScope attachedTo: scope.
-	super acceptMethodNode: aMethodNode
+	super acceptMethodNode: aMethodNode.
+	aMethodNode scope: scope
     ]
 
     acceptVariableNode: aVariableNode [

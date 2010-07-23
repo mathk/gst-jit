@@ -24,12 +24,12 @@ STInST.RBProgramNodeVisitor subclass: Translator [
  
     acceptMethodNode: aMethodNode [
 	<category: 'visitor-double dispatching'>
-	| method |
-	method := JitMethod new. "set arg and temp size"
-	interp := interpClass new. "set the jitMethod"
-	interpreter methodProlog.
+	interp := interpClass new
+	    initArgsCount: aMethodNode arguments size tempsCount: aMethodNode scope usedBinding size;
+	    yourself.
+	interp methodProlog.
 	super acceptMethodNode: aMethodNode.
-	interpreter methodEpilog
+	interp methodEpilog
     ]
 
     acceptAssignmentNode: aAssignmentNode [
@@ -46,13 +46,13 @@ STInST.RBProgramNodeVisitor subclass: Translator [
 	<category: 'visitor-double dispatching'>
 	"Store the variable into the tempSlot of the context"
 	self visitNode: anAssignmentNode value.
-	anAssignmentNode variable slot emitStore: interpreter
+	anAssignmentNode variable slot emitStore: interp
     ]
 
     acceptVariableNode: aVariableNode [
 	<category: 'visitor-double dispatching'>
 	"Push the variable on the stack context"
-	aVariableNode slot emitPush: interpreter "Fix me how to get the slot"
+	aVariableNode slot emitPush: interp
     ]
 
     visitArgument: aVariableNode [

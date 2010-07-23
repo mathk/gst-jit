@@ -2,8 +2,9 @@
 
 Object subclass: JitMethod [
     | argsCount tempCount jitState stackCount |
-	
+    
     valueWithReceiver: object withArguments: args [
+	| context |
 	args size ~= argsCount ifTrue:[
 	    self error: 'Wrong number of argument'
 	].
@@ -12,21 +13,21 @@ Object subclass: JitMethod [
     ]
     
     activationRecord: context withArguments: args [
-	"Primitive call".
+	"Primitive call"
     ]
-
+	
     argsCount: aInt [
 	argsCount := aInt
     ]
-
+    
     argsCount [
 	^argsCount
     ]
-
+    
     tempCount: aInt [
 	tempCount := aInt
     ]
-
+    
     tempCount [
 	^tempCount
     ]

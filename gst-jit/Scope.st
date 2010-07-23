@@ -15,7 +15,22 @@ Object subclass: Scope [
     Scope class >> defaultSlotClass [
 	^self subclassResponsibility
     ]
+
+    isGlobal [
+	<category: 'testing'>
+	^false
+    ]
     
+    isBehavior [
+	<category: 'testing'>
+	^false
+    ]
+
+    isContext [
+	<category: 'testing'>
+	^false
+    ]
+
     defaultSlotClass [
 	^self class defaultSlotClass
     ]
@@ -83,6 +98,11 @@ Scope subclass: ContextScope [
     nextOffset [
 	^self usedBinding size
     ]
+
+    isContext [
+	<category: 'testing'>
+	^true
+    ]
 ]
 
 Scope subclass: BehaviorScope [
@@ -108,6 +128,11 @@ Scope subclass: BehaviorScope [
 	behavior allInstVarNames do: [ :each | 
 				self  bind: each asString ]
     ]
+
+    isBehavior [
+	<category: 'testing'>
+	^true
+    ]
 ]
 
 Scope subclass: GlobalScope [
@@ -120,6 +145,11 @@ Scope subclass: GlobalScope [
 	^(self new)
 	    namespace: aNamespace;
 	    yourself
+    ]
+
+    isGlobal [
+	<category: 'testing'>
+	^true
     ]
 
     namespace: aNamespace [
@@ -153,6 +183,16 @@ Object subclass: Slot [
 	^(self new)
 	    scope: scope;
 	    yourself
+    ]
+    
+    isBehavior [
+	<category: 'testing'>
+	^false
+    ]
+
+    isContext [
+	<category: 'testing'>
+	^false
     ]
     
     name [
@@ -200,6 +240,11 @@ Slot subclass: ContextSlot [
 	offset ifNil: [
 	    offset := self scope nextOffset]
     ]
+
+    isContext [
+	<category: 'testing'>
+	^true
+    ]
 ]
 
 Slot subclass: BehaviorSlot [
@@ -207,6 +252,11 @@ Slot subclass: BehaviorSlot [
 
     binding [
 	^binding
+    ]
+
+    isBehavior [
+	<category: 'testing'>
+	^true
     ]
 
     binding: aBinding [

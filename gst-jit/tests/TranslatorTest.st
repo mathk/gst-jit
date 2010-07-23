@@ -13,7 +13,7 @@ TestCase subclass: TranslatorTest [
 	testStoreInTemp [
 		
 		| ligtningInterp |
-		Translator visitNode: node interpret: LightningInterpreter.
+		ligtningInterp := (Translator visitNode: node interpretOn: LightningInterpreter) interp.
 		ligtningInterp state assemble; dump: 'assemblTest'
 	]
 ]

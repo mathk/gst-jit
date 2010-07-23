@@ -12,6 +12,22 @@ STInST.RBVariableNode extend [
     ]
 ]
 
+STInST.RBMethodNode extend [
+
+    scope [
+	^self properties at: #scope ifAbsent:[
+	    self error: 'You need to pass throw the ScopeChecker']
+    ]
+
+    scope: aScope [
+	self properties at: #scope put: aScope
+    ]
+    
+    scopeCheckIn: aBehavior [
+	ScopeChecker visitMethod: self in: A
+    ]
+]
+
 
 STInST.RBProgramNode extend [
      | properties |

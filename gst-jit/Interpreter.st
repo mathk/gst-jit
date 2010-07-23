@@ -65,6 +65,16 @@ Interpreter subclass: LightningInterpreter [
 	    yourself
     ]
 
+    method [
+	^method ifNil: [method := JitMethod new]
+    ]
+
+    initArgsCount: args tempsCount: temps [
+	self method 
+	    argsCount: args;
+	    tempCount: temps
+    ] 
+
     stackCount [
 	<category: 'accessing'>
 	^stackCount
