@@ -98,7 +98,9 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     methodProlog [
-	self state movI: Lightning.R0 fromUI: Lightning.CJitState primGstThisContextOOP
+	self state 
+	    movI: Lightning.R0 fromP: Lightning.CJitState primGstThisContextOOP;
+	    loadP: Lightning.R0 fromReg: Lightning.R0
 	
 	"Fetch the JitMethod and put it in the R1 register"
     ]
@@ -115,7 +117,7 @@ Interpreter subclass: LightningInterpreter [
 	self state 
             loadUI: Lightning.R1 "SP"
 	    fromReg: Lightning.R0 
-	    im: 4;
+	    im: 4 * self state sizOfOop;
 	    loadI: Lightning.R2 
 	    fromReg: Lightning.R0 
 	    im: 5"(method tempOffset: anOffset)";

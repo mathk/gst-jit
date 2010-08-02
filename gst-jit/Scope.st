@@ -222,13 +222,24 @@ Object subclass: Slot [
     
 Slot subclass: ContextSlot [
     "I am a slote inside context scope"
-    | offset |
+    | offset readonly |
+
+    readonly: aBool [
+	<category: 'accessing'>
+	readonly := aBool
+    ]
+
+    readonly [
+	<category: 'accessing'>
+	^readonly ifNil: [readonly := false]
+    ]
 
     emitPush: anInterpreter [
 	anInterpreter pushTemp: self offset
     ]
 
     emitStore: anInterpreter [
+	self readonly ifTrue: [ SystemExceptions.ReadOnlyObject signalOn: self reason: 'arguments are readonly' ].
 	anInterpreter storeIntoTemp: self offset
     ]
     

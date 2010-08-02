@@ -1,6 +1,6 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
-STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
+STInST.RBProgramNodeVisitor subclass: ScopeChecker [
     | scope |
 
     ScopeChecker class >> visitMethod: aNode in: aClass [
@@ -9,13 +9,13 @@ STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
 	    visitNode: aNode;
 	    yourself
     ]
-
+    
     scope [
 	<category: 'accessing'>
 
 	^ scope
     ]
-
+    
     scope: aScope [
 	<category: 'accessing'>
 
@@ -50,9 +50,20 @@ STInST.RBProgramNodeVisitor  subclass: ScopeChecker [
 	scope assignOffset: aVariableNode
     ]
 
+    acceptSequenceNode: aSequenceNode [
+	<category: 'visitor-double dispatching'>
+	self visitTemporaries: aSequenceNode temporaries.
+	aSequenceNode statements do: [:each | self visitNode: each]
+    ]
+
     visitArgument: aVariableNode [
 	<category: 'visiting'>
 
 	scope bind: aVariableNode name
-    ] 
+    ]
+    
+    visitTemporaries: aNodeCollection [
+	<category: 'visiting'>
+    ]
+    
 ]
