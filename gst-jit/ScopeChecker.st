@@ -58,7 +58,7 @@ STInST.RBProgramNodeVisitor subclass: ScopeChecker [
 
     visitArgument: aVariableNode [
 	<category: 'visiting'>
-	scope bindArgument: aVariableNode name
+	scope bindArgument: aVariableNode name.
 	super visitArgument: aVariableNode
     ]
     

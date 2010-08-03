@@ -5,9 +5,6 @@ Object subclass: JitMethod [
     
     valueWithReceiver: object withArguments: args [
 	| context |
-	args size ~= argsCount ifTrue:[
-	    self error: 'Wrong number of argument'
-	].
 	context := MethodContext new: argsAndTempsCount + stackCount.
 	"Initialize the context with the receiver "
     ]
