@@ -58,12 +58,18 @@ STInST.RBProgramNodeVisitor subclass: ScopeChecker [
 
     visitArgument: aVariableNode [
 	<category: 'visiting'>
-
-	scope bind: aVariableNode name
+	scope bindArgument: aVariableNode name
+	super visitArgument: aVariableNode
     ]
     
     visitTemporaries: aNodeCollection [
 	<category: 'visiting'>
+	aNodeCollection do: [:each | self visitTemporarie: each]
+    ]
+
+    visitTemporarie: aVariableNode [
+	<category: 'visiting'>
+	scope bind: aVariableNode name
     ]
     
 ]

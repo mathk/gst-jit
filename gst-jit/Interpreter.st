@@ -69,10 +69,9 @@ Interpreter subclass: LightningInterpreter [
 	^method ifNil: [method := JitMethod new]
     ]
 
-    initArgsCount: args tempsCount: temps [
+    initArgsAnTempsCount: count  [
 	self method 
-	    argsCount: args;
-	    tempCount: temps
+	    argsAndTempsCount: count.
     ] 
 
     stackCount [
@@ -115,9 +114,9 @@ Interpreter subclass: LightningInterpreter [
 
     pushTemp: anOffset [
 	self state 
-            loadUI: Lightning.R1 "SP"
+            loadUI: Lightning.R1
 	    fromReg: Lightning.R0 
-	    im: 4 * self state sizOfOop;
+	    im: (MethodContext indexOfInstVar: 'sp') * self state sizOfOop;
 	    loadI: Lightning.R2 
 	    fromReg: Lightning.R0 
 	    im: 5"(method tempOffset: anOffset)";

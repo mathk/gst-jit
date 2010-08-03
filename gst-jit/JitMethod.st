@@ -1,14 +1,14 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
 Object subclass: JitMethod [
-    | argsCount tempCount jitState stackCount |
+    | argsAndTempsCount jitState stackCount |
     
     valueWithReceiver: object withArguments: args [
 	| context |
 	args size ~= argsCount ifTrue:[
 	    self error: 'Wrong number of argument'
 	].
-	context := MethodContext new: argsCount + tempCount + stackCount.
+	context := MethodContext new: argsAndTempsCount + stackCount.
 	"Initialize the context with the receiver "
     ]
     
@@ -16,19 +16,12 @@ Object subclass: JitMethod [
 	"Primitive call"
     ]
 	
-    argsCount: aInt [
-	argsCount := aInt
+    argsAndTempsCount: aInt [
+	argsAndTempsCount := aInt
     ]
     
-    argsCount [
-	^argsCount
+    argsAndTempsCount [
+	^argsAndTempsCount
     ]
     
-    tempCount: aInt [
-	tempCount := aInt
-    ]
-    
-    tempCount [
-	^tempCount
-    ]
 ]

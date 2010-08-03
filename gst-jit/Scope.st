@@ -85,6 +85,14 @@ Scope subclass: ContextScope [
 	^usedBinding ifNil: [usedBinding := Set new]
     ]
 
+    bindArgument: name [
+	self bindings at: name put: ((self createReadonlySlot) name: name; yourself)
+    ]
+
+    createReadonlySlot [
+	^ (self defaultSlotClass for: self) readonly: true; yourself
+    ]
+
     assignOffset: aVariableNode [
 	| slot |
 	"We only assign an offset to temp that it is used"
