@@ -1,7 +1,7 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
 Object subclass: JitMethod [
-    | argsAndTempsCount jitState stackCount |
+    | argsAndTempsCount literals jitState stackCount |
     
     valueWithReceiver: object withArguments: args [
 	| context |
@@ -21,4 +21,7 @@ Object subclass: JitMethod [
 	^argsAndTempsCount
     ]
     
+    literals: anArray [
+	literals := anArray
+    ]
 ]

@@ -30,6 +30,10 @@ Object subclass: Interpreter [
 	self subclassResponssability
     ]
 
+    pushLiteral: index [
+	
+    ]
+
     popIntoTemporary: anOffset [
 	
     ]
@@ -50,6 +54,7 @@ Object subclass: Interpreter [
     storeIntoTemp: anOffset [
 	self subclassResponssability
     ]
+
 ]
 
 Interpreter subclass: LightningInterpreter [
@@ -72,7 +77,12 @@ Interpreter subclass: LightningInterpreter [
     initArgsAnTempsCount: count  [
 	self method 
 	    argsAndTempsCount: count.
-    ] 
+    ]
+    
+    literals: anArray [
+	self method
+	    literals: anArray
+    ]
 
     stackCount [
 	<category: 'accessing'>
@@ -132,6 +142,14 @@ Interpreter subclass: LightningInterpreter [
 	 1) fetch the context Normaly it is R0
 	 2) fetch the object at TEMP_BASE + index offset in the context
 	 3) push the object ins the context at sp of the context"
+    ]
+    
+    pushLiteral: index [
+	self state
+	    fetchOop: Lightning.R1 fromObjectReg: Lightning.R0 at: (MethodContext indexOfInstVar: 'method');
+	    fetchOop: Lightning.R1 fromOopReg: Lightning.R1 at: (JitMethod indexOfInstVar: 'literals').
+	"continue"
+	    
     ]
 
     popIntoTemporary: anOffset [
