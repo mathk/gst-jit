@@ -119,18 +119,15 @@ Interpreter subclass: LightningInterpreter [
 	    im: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop;
 	    loadI: Lightning.R2 
 	    fromReg: Lightning.R0 
-	    im: 5"(method tempOffset: anOffset)";
-	    addI: Lightning.R1 to: Lightning.R1 int: 1.
-	    "store sp"
-	    " TEST loadC: Lightning.R1 fromReg: Lightning.R0 and: Lightning.R2;
-	    loadD: Lightning.R0 im: 1.0;
-	    loadUI: Lightning.R0 im: 42;
-	    loadUS: Lightning.R0 fromReg: Lightning.R1 im: 1;
-	    movI: Lightning.R0 fromUI: 4;
-	    loadUI: Lightning.R0 im: 4."
-	    
-	    "store R2 in stack *(R0 + R1)"
-
+	    im: (MethodContext allInstVarNames size + anOffset) * self state sizeOfOop;
+	    addI: Lightning.R1 to: Lightning.R1 int: 1;
+	    storeImUI: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
+	    and: Lightning.R0
+	    fromReg: Lightning.R1;
+	    addI: Lightning.R1 to: Lightning.R1 int: (MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop;
+	    storeRegP: Lightning.R1
+	    and: Lightning.R0
+	    fromReg: Lightning.R2.
 	"Here we:
 	 1) fetch the context Normaly it is R0
 	 2) fetch the object at TEMP_BASE + index offset in the context
