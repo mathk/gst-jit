@@ -43,6 +43,11 @@ STInST.RBProgramNodeVisitor subclass: Translator [
 	super acceptSequenceNode: aSequenceNode
     ]
 
+    acceptLiteralNode: aLiteralNode [
+	<category: 'visitor-double dispatching'>
+	interp pushLiteral: aLiteralNode literalIndex
+    ]
+
     acceptAssignmentNode: anAssignmentNode [
 	<category: 'visitor-double dispatching'>
 	"Store the variable into the tempSlot of the context"
