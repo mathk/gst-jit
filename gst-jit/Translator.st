@@ -26,6 +26,7 @@ STInST.RBProgramNodeVisitor subclass: Translator [
 	<category: 'visitor-double dispatching'>
 	interp := interpClass new
 	    initArgsAnTempsCount: aMethodNode scope usedBinding size;
+	    literals: aMethodNode literals;
 	    yourself.
 	interp methodProlog.
 	super acceptMethodNode: aMethodNode.

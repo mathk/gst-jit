@@ -6,7 +6,7 @@ TestCase subclass: TranslatorTest [
 	| node |
 	
 	setUp [
-		node := (STInST.RBParser parseMethod: 'foo | e d | e := 12. d:= e')
+		node := (STInST.RBParser parseMethod: 'foo: r | e d | e := 12. d:= e')
 		             checkScopeIn: A.
 	]
 

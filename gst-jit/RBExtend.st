@@ -22,9 +22,13 @@ STInST.RBMethodNode extend [
     scope: aScope [
 	self properties at: #scope put: aScope
     ]
+
+    literals [
+	^self properties at: #literals ifAbsentPut:[OrderedSet new]
+    ]
     
     scopeCheckIn: aBehavior [
-	ScopeChecker visitMethod: self in: A
+	ScopeChecker visitMethod: self in: aBehavior
     ]
 ]
 
@@ -45,5 +49,17 @@ STInST.RBMethodNode extend [
     
     checkScopeIn: aBehavior [
 	ScopeChecker visitMethod: self in: aBehavior.
+    ]
+]
+
+STInST.RBValueNode extend [
+    
+    literalIndex [
+	^self properties at: #literalIndex ifAbsent:[
+	    self error: 'You need to pass throw the ScopeChecker']
+    ]
+
+    literalIndex: i [
+	self properties at: #literalIndex put: i
     ]
 ]
