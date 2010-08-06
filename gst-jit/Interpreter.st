@@ -124,20 +124,10 @@ Interpreter subclass: LightningInterpreter [
 
     pushTemp: anOffset [
 	self state 
-            loadUI: Lightning.R1
-	    fromReg: Lightning.R0 
-	    im: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop;
 	    loadI: Lightning.R2 
 	    fromReg: Lightning.R0 
-	    im: (MethodContext allInstVarNames size + anOffset) * self state sizeOfOop;
-	    addI: Lightning.R1 to: Lightning.R1 int: 1;
-	    storeImUI: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
-	    and: Lightning.R0
-	    fromReg: Lightning.R1;
-	    addI: Lightning.R1 to: Lightning.R1 int: (MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop;
-	    storeRegP: Lightning.R1
-	    and: Lightning.R0
-	    fromReg: Lightning.R2.
+	    im: (MethodContext allInstVarNames size + anOffset) * self state sizeOfOop.
+	self privatePushReg: Lightning.R2
 	"Here we:
 	 1) fetch the context Normaly it is R0
 	 2) fetch the object at TEMP_BASE + index offset in the context
@@ -145,11 +135,45 @@ Interpreter subclass: LightningInterpreter [
     ]
     
     pushLiteral: index [
+	
 	self state
-	    fetchOop: Lightning.R1 fromObjectReg: Lightning.R0 at: (MethodContext indexOfInstVar: 'method');
-	    fetchOop: Lightning.R1 fromOopReg: Lightning.R1 at: (JitMethod indexOfInstVar: 'literals').
-	"continue"
+	    fetchOop: Lightning.R1 
+	    fromObjectReg: Lightning.R0 
+	    at: (MethodContext indexOfInstVar: 'method');
+	    fetchOop: Lightning.R1 
+	    fromOopReg: Lightning.R1 
+	    at: (JitMethod indexOfInstVar: 'literals');
+	    fetchOop: Lightning.R1 
+	    fromOopReg: Lightning.R1
+	    at: index.
+	self privatePushReg: Lightning.R1
 	    
+    ]
+
+    privatePushReg: reg [
+	"Push the content of a register in the stack"
+	| sp offset |
+	self pushCount.
+	reg = Lightning.R1 
+            ifTrue:[
+		sp := Lightning.R2.
+	    ]
+	    ifFalse: [
+		sp := Lightning.R1
+	    ].
+
+	self state
+            loadUI: sp
+	    fromReg: Lightning.R0 
+	    im: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop;
+	    addI: sp to: sp int: 1;
+	    storeImUI: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
+	    and: Lightning.R0
+	    fromReg: sp;
+	    addI: sp  to: sp int: (MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop;
+	    storeRegP: sp
+	    and: Lightning.R0
+	    fromReg: reg.
     ]
 
     popIntoTemporary: anOffset [
