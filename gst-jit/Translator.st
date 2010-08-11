@@ -52,7 +52,8 @@ STInST.RBProgramNodeVisitor subclass: Translator [
 	<category: 'visitor-double dispatching'>
 	"Store the variable into the tempSlot of the context"
 	self visitNode: anAssignmentNode value.
-	anAssignmentNode variable slot emitStore: interp
+	anAssignmentNode variable slot emitStore: interp.
+	interp pop
     ]
 
     acceptVariableNode: aVariableNode [

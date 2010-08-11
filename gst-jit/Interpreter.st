@@ -12,10 +12,10 @@ Object subclass: Interpreter [
 
     jumpTo: label [
     ]
-   
+
     pop [
     ]
- 
+
     pushLiteral [
     ]
 
@@ -23,7 +23,7 @@ Object subclass: Interpreter [
     ]
 
     popIntoInstanceVariable: anIndex [
-	
+
     ]
 
     pushTemporary: anOffset [
@@ -31,11 +31,11 @@ Object subclass: Interpreter [
     ]
 
     pushLiteral: index [
-	
+
     ]
 
     popIntoTemporary: anOffset [
-	
+
     ]
 
     returnFromContext [
@@ -73,10 +73,10 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     initArgsAnTempsCount: count  [
-	self method 
+	self method
 	    argsAndTempsCount: count.
     ]
-    
+
     literals: anArray [
 	self method
 	    literals: anArray
@@ -105,10 +105,10 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     methodProlog [
-	self state 
+	self state
 	    movI: Lightning.R0 fromP: Lightning.CJitState primGstThisContextOOP;
 	    loadP: Lightning.R0 fromReg: Lightning.R0
-	
+
 	"Fetch the JitMethod and put it in the R1 register"
     ]
 
@@ -124,55 +124,43 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     pushTemp: anOffset [
-	self state 
-	    loadUL: Lightning.R2 
-	    fromReg: Lightning.R0 
-	    im: (MethodContext allInstVarNames size + anOffset) * self state sizeOfOop.
+	self state
+	    loadUL: Lightning.R2
+	    fromReg: Lightning.R0
+	    im: (self tempDisplacement: anOffset)
 	self privatePushReg: Lightning.R2
 	"Here we:
 	 1) fetch the context Normaly it is R0
 	 2) fetch the object at TEMP_BASE + index offset in the context
 	 3) push the object ins the context at sp of the context"
     ]
-    
+
     pushLiteral: index [
-	
+
 	self state
-	    fetchOop: Lightning.R1 
-	    fromObjectReg: Lightning.R0 
+	    fetchOop: Lightning.R1
+	    fromObjectReg: Lightning.R0
 	    at: (MethodContext indexOfInstVar: 'method');
-	    fetchOop: Lightning.R1 
-	    fromOopReg: Lightning.R1 
+	    fetchOop: Lightning.R1
+	    fromOopReg: Lightning.R1
 	    at: (JitMethod indexOfInstVar: 'literals');
-	    fetchOop: Lightning.R1 
+	    fetchOop: Lightning.R1
 	    fromOopReg: Lightning.R1
 	    at: index.
 	self privatePushReg: Lightning.R1
-	    
     ]
 
     privatePushReg: reg [
 	"Push the content of a register in the stack"
 	| sp offset |
 	self pushCount.
-	reg = Lightning.R1 
-            ifTrue:[
-		sp := Lightning.R2.
-	    ]
-	    ifFalse: [
-		sp := Lightning.R1
-	    ].
-
+	sp := reg = Lightning.R1 ifTrue:[ Lightning.R2 ] ifFalse: [ Lightning.R1 ].
 	self loadSp: sp.
 	self state addI: sp to: sp ulong: 1.
 	self storeSp: sp.
 	self state
-	    addI: sp  
-	    to: sp 
-	    ulong: (MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop;
-	    storeRegP: sp
-	    and: Lightning.R0
-	    fromReg: reg.
+	    addI: sp to: sp ulong: self stackDisplacementBase;
+	    storeRegP: sp and: Lightning.R0 fromReg: reg
     ]
 
     popIntoTemporary: anOffset [
@@ -186,7 +174,7 @@ Interpreter subclass: LightningInterpreter [
     pushInstanceVariable: anIndex [
 	self pushCount
     ]
-    
+
     popIntoInstanceVariable: anIndex [
 	self popCount
     ]
@@ -203,31 +191,46 @@ Interpreter subclass: LightningInterpreter [
 
     storeIntoTemp: anOffset [
 	self loadStackTop: Lightning.R1.
-	self state 
-            storeImP: (MethodContext allInstVarNames size + anOffset) * self state sizeOfOop 
+	self state
+	    storeImP: (self tempDisplacement: anOffset)
 	    and: Lightning.R0
 	    fromReg: Lightning.R1
     ]
 
     loadStackTop: reg [
 	self loadSp: reg.
-	self state 
-            loadUL: reg 
-	    fromReg: reg 
-	    im: (MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop
+	self state
+	    addI: reg
+	    to: reg
+	    ulong: self stackDisplacementBase;
+	    loadUL: reg
+	    fromReg: reg
     ]
-    
+
     loadSp: reg [
 	self state
 	    loadUL: reg
-	    fromReg: Lightning.R0 
-	    im: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
+	    fromReg: Lightning.R0
+	    im: self spDisplacement
     ]
 
     storeSp: reg [
 	self state
-	    storeImUL: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
+	    storeImUL: self spDisplacement
 	    and: Lightning.R0
 	    fromReg: reg
+    ]
+
+
+    tempDisplacement: offset [
+	^(MethodContext allInstVarNames size + offset) * self state sizeOfOop
+    ]
+
+    spDisplacement [
+	^(MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
+    ]
+
+    stackDisplacementBase [
+	^(MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop
     ]
 ]
