@@ -59,9 +59,7 @@ Object subclass: Interpreter [
 
 Interpreter subclass: LightningInterpreter [
 
-    "R0 designate the MethodContext
-     R1 is the JitMethod
-     R2 can be the Stack Pointer"
+    "R0 designate the MethodContext"
     | state method stackCount currentStackCount |
 
     LightningInterpreter class >> new [
@@ -119,12 +117,15 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     pop [
+	self loadSp: sp.
+	self state subI: sp to: sp ulong: 1.
+	self storeSp: sp.
 	self popCount
     ]
 
     pushTemp: anOffset [
 	self state 
-	    loadI: Lightning.R2 
+	    loadUL: Lightning.R2 
 	    fromReg: Lightning.R0 
 	    im: (MethodContext allInstVarNames size + anOffset) * self state sizeOfOop.
 	self privatePushReg: Lightning.R2
@@ -162,15 +163,13 @@ Interpreter subclass: LightningInterpreter [
 		sp := Lightning.R1
 	    ].
 
+	self loadSp: sp.
+	self state addI: sp to: sp ulong: 1.
+	self storeSp: sp.
 	self state
-            loadUI: sp
-	    fromReg: Lightning.R0 
-	    im: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop;
-	    addI: sp to: sp int: 1;
-	    storeImUI: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
-	    and: Lightning.R0
-	    fromReg: sp;
-	    addI: sp  to: sp int: (MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop;
+	    addI: sp  
+	    to: sp 
+	    ulong: (MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop;
 	    storeRegP: sp
 	    and: Lightning.R0
 	    fromReg: reg.
@@ -199,10 +198,36 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     popCount [
-	self stackCount: self stackCount - 1.
+	self stackCount: self stackCount - 1
     ]
 
     storeIntoTemp: anOffset [
-	
+	self loadStackTop: Lightning.R1.
+	self state 
+            storeImP: (MethodContext allInstVarNames size + anOffset) * self state sizeOfOop 
+	    and: Lightning.R0
+	    fromReg: Lightning.R1
+    ]
+
+    loadStackTop: reg [
+	self loadSp: reg.
+	self state 
+            loadUL: reg 
+	    fromReg: reg 
+	    im: (MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop
+    ]
+    
+    loadSp: reg [
+	self state
+	    loadUL: reg
+	    fromReg: Lightning.R0 
+	    im: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
+    ]
+
+    storeSp: reg [
+	self state
+	    storeImUL: (MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
+	    and: Lightning.R0
+	    fromReg: reg
     ]
 ]
