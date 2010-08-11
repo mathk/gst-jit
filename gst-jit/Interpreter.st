@@ -117,9 +117,9 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     pop [
-	self loadSp: sp.
-	self state subI: sp to: sp ulong: 1.
-	self storeSp: sp.
+	self loadSp: Lightning.R1.
+	self state subI: Lightning.R1 to: Lightning.R1 ulong: 1.
+	self storeSp: Lightning.R1.
 	self popCount
     ]
 
@@ -127,7 +127,7 @@ Interpreter subclass: LightningInterpreter [
 	self state
 	    loadUL: Lightning.R2
 	    fromReg: Lightning.R0
-	    im: (self tempDisplacement: anOffset)
+	    im: (self tempDisplacement: anOffset).
 	self privatePushReg: Lightning.R2
 	"Here we:
 	 1) fetch the context Normaly it is R0

@@ -53,7 +53,7 @@ STInST.RBProgramNodeVisitor subclass: Translator [
 	"Store the variable into the tempSlot of the context"
 	self visitNode: anAssignmentNode value.
 	anAssignmentNode variable slot emitStore: interp.
-	interp pop
+	interp pop.
     ]
 
     acceptVariableNode: aVariableNode [
