@@ -55,6 +55,8 @@ Object subclass: Interpreter [
 	self subclassResponssability
     ]
 
+    returnTop [
+    ]
 ]
 
 Interpreter subclass: LightningInterpreter [
@@ -195,6 +197,20 @@ Interpreter subclass: LightningInterpreter [
 	    storeImP: (self tempDisplacement: anOffset)
 	    and: Lightning.R0
 	    fromReg: Lightning.R1
+    ]
+
+    returnTop [
+	" 
+	 if UNCOMMON (!unwind_method ())
+	 {
+	 SEND_MESSAGE (_gst_bad_return_error_symbol, 0);
+	 }
+	 else
+	 {
+	 SET_STACKTOP (val);
+	 }
+	 FETCH;
+	 "
     ]
 
     loadStackTop: reg [
