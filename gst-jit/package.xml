@@ -1,6 +1,8 @@
 <package>
   <name>Jit</name>
   <namespace>Jit</namespace>
+  <module>libgstjit</module>
+
   <prereq>Parser</prereq>
   <prereq>Lightning</prereq>
 

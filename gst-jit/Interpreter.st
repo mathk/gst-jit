@@ -16,7 +16,7 @@ Object subclass: Interpreter [
     pop [
     ]
 
-    pushLiteral [
+    pushReceiver [
     ]
 
     pushInstanceVariable: anIndex [
@@ -116,6 +116,7 @@ Interpreter subclass: LightningInterpreter [
 
     methodEpilog [
 	"Free context and return to the caller ..."
+	
     ]
 
     pop [
@@ -152,6 +153,9 @@ Interpreter subclass: LightningInterpreter [
 	self privatePushReg: Lightning.R1
     ]
 
+    pushReceiver [
+    ]
+
     privatePushReg: reg [
 	"Push the content of a register in the stack"
 	| sp offset |
@@ -167,10 +171,6 @@ Interpreter subclass: LightningInterpreter [
 
     popIntoTemporary: anOffset [
 	self popCount
-    ]
-
-    pushLiteral [
-	self pushCount
     ]
 
     pushInstanceVariable: anIndex [
@@ -200,6 +200,10 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     returnTop [
+
+	self state 
+	    prepare: 0;
+	    finishUL: self primGstUnwindContextAddr
 	" 
 	 if UNCOMMON (!unwind_method ())
 	 {
@@ -248,5 +252,11 @@ Interpreter subclass: LightningInterpreter [
 
     stackDisplacementBase [
 	^(MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop
+    ]
+
+    primGstUnwindContextAddr [
+	<category: 'primitive'>
+
+	<primitive: VMpr_GstUnwindContextAddr_ptr>
     ]
 ]

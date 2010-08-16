@@ -30,6 +30,7 @@ STInST.RBProgramNodeVisitor subclass: Translator [
 	    yourself.
 	interp methodProlog.
 	super acceptMethodNode: aMethodNode.
+	aMethodNode lastIsReturn ifFalse: [interp pushReceiver; returnTop].
 	interp methodEpilog
     ]
 
