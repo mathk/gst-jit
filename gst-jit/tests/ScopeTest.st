@@ -25,20 +25,20 @@ TestCase subclass: ScopeCheckerTest [
 	<category: 'testing'>
 
 	| scope |
-	scope := (STInST.RBParser parseMethod: 'foo a send: b') scopeCheckIn: A; scope.
+	scope := (STInST.RBParser parseMethod: 'foo a send: b') checkScopeIn: A; scope.
 	self assert: (scope hasSlotNamed: 'a').
 	self assert: (scope hasSlotNamed: 'b').
 	self assert: (scope hasSlotNamed: 'c').
 	self shouldnt: [ scope hasSlotNamed: 'd' ] raise: MessageNotUnderstood.
 	self should: [ scope lookup: 'd' ] raise: SystemExceptions.NotFound.
 
-	scope := (STInST.RBParser parseMethod: 'foo: d a send: b') scopeCheckIn: A; scope.
+	scope := (STInST.RBParser parseMethod: 'foo: d a send: b') checkScopeIn: A; scope.
 	self assert: (scope hasSlotNamed: 'a').
 	self assert: (scope hasSlotNamed: 'b').
 	self assert: (scope hasSlotNamed: 'c').
 	self assert: (scope hasSlotNamed: 'd').
 
-	scope := (STInST.RBParser parseMethod: 'foo: d | e f | a send: b') scopeCheckIn: A; scope.
+	scope := (STInST.RBParser parseMethod: 'foo: d | e f | a send: b') checkScopeIn: A; scope.
 	self assert: (scope hasSlotNamed: 'a').
 	self assert: (scope hasSlotNamed: 'b').
 	self assert: (scope hasSlotNamed: 'c').
@@ -48,25 +48,25 @@ TestCase subclass: ScopeCheckerTest [
 
 	scope := (STInST.RBParser parseMethod: 'foo: d | e f | 
 	    a send: b.
-	    [ :x :y | x msg. y msg ] ') scopeCheckIn: A; scope.
+	    [ :x :y | x msg. y msg ] ') checkScopeIn: A; scope.
 
 	scope := (STInST.RBParser parseMethod: 'foo: d | e f | 
 	    a send: b. 
-	    [ :x :y | | l s | l msg. s msg. x msg. y msg ] ') scopeCheckIn: A; scope.
+	    [ :x :y | | l s | l msg. s msg. x msg. y msg ] ') checkScopeIn: A; scope.
 
 	self should: [
 	    (STInST.RBParser parseMethod: 'foo: d | e f | 
 		a send: b. 
 		[ :x :y | | l s | 
 		    [ :l :s | l msg. s msg. x msg. y msg ]  ]. 
-		[ x msg. l msg ]') scopeCheckIn: A ] raise: Exception
+		[ x msg. l msg ]') checkScopeIn: A ] raise: Exception
     ]
 
     testTemparoary [
 	<category: 'testing'>
 
 	| scope |
-	scope := (STInST.RBParser parseMethod: 'foo | e f | e := 9') scopeCheckIn: A; scope.
+	scope := (STInST.RBParser parseMethod: 'foo | e f | e := 9') checkScopeIn: A; scope.
 	self assert: (scope hasSlotNamed: 'e').
 	self assert: (scope hasSlotNamed: 'f').
 	self assert: (scope lookup: 'e') offset = 0.
@@ -75,7 +75,7 @@ TestCase subclass: ScopeCheckerTest [
 
     testArgument [
 	| scope |
-	scope := (STInST.RBParser parseMethod: 'foo: arg1 bar: arg2 | e | e := 9') scopeCheckIn: A; scope.
+	scope := (STInST.RBParser parseMethod: 'foo: arg1 bar: arg2 | e | e := 9') checkScopeIn: A; scope.
 	self assert: (scope lookup: 'arg1') notNil.
 	self assert: (scope lookup: 'arg2') notNil
     ]

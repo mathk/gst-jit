@@ -5,15 +5,8 @@ CompiledMethod subclass: JitMethod [
 
     <shape: #byte>
 
-    JitMethod class >> literals: lits numArgs: numArg numTemps: numTemp attributes:  attrArray instr: jitState depth: depth [
-	^(self new: 0)
-	    buildHeaderDepth: depth numArgs: numArg numTemp: numTemp;
-	    jitState: jitState;
-	    yourself.
-    ]
-
     buildHeaderDepth: depth numArgs: args numTemp: temps [
-	| maxDeth|
+	| maxDepth|
 	maxDepth := depth + args + temps
 	args > 31 ifTrue: [self error: 'Method can''t take more than 31 parameter'].
 	temps > 63 ifTrue: [self error: 'Method can''t have more than 63 temps'].
@@ -36,6 +29,10 @@ CompiledMethod subclass: JitMethod [
 
     jitState: aState [
 	jitState := aState
+    ]
+
+    literals: anArray [
+	literals := anArray
     ]
     
     jitState [

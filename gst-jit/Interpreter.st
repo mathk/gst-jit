@@ -62,7 +62,7 @@ Object subclass: Interpreter [
 Interpreter subclass: LightningInterpreter [
 
     "R0 designate the MethodContext"
-    | state method stackCount currentStackCount |
+    | numTemp numArg state method stackCount currentStackCount |
 
     LightningInterpreter class >> new [
 	^(super new)
@@ -70,13 +70,16 @@ Interpreter subclass: LightningInterpreter [
 	    yourself
     ]
 
-    method [
-	^method ifNil: [method := JitMethod new]
+    numArg: anInteger [
+	numArg := anInteger
     ]
 
-    initArgsAnTempsCount: count  [
-	self method
-	    argsAndTempsCount: count.
+    numTemp: anInteger [
+	numTemp := anInteger
+    ]
+
+    method [
+	^method ifNil: [method := JitMethod new: 0]
     ]
 
     literals: anArray [
@@ -251,7 +254,7 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     stackDisplacementBase [
-	^(MethodContext allInstVarNames size + self method argsAndTempsCount) * self state sizeOfOop
+	^(MethodContext allInstVarNames size + numTemp + numArg) * self state sizeOfOop
     ]
 
     primGstUnwindContextAddr [

@@ -27,8 +27,16 @@ STInST.RBMethodNode extend [
 	^self properties at: #literals ifAbsentPut:[OrderedSet new]
     ]
     
-    scopeCheckIn: aBehavior [
+    checkScopeIn: aBehavior [
 	ScopeChecker visitMethod: self in: aBehavior
+    ]
+
+    numTemp [
+        ^self scope usedBinding size - self arguments size
+    ]
+
+    numArg [
+        ^self arguments size
     ]
 ]
 
@@ -44,13 +52,6 @@ STInST.RBProgramNode extend [
 	^properties ifNil: [properties := Dictionary new].
     ]
  ]
-
-STInST.RBMethodNode extend [
-    
-    checkScopeIn: aBehavior [
-	ScopeChecker visitMethod: self in: aBehavior.
-    ]
-]
 
 STInST.RBValueNode extend [
     
