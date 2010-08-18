@@ -5,9 +5,13 @@ CompiledMethod subclass: JitMethod [
 
     <shape: #byte>
 
-    buildHeaderDepth: depth numArgs: args numTemp: temps [
+    buildHeaderDepth: depth numArg: args numTemp: temps [
 	| maxDepth|
-	maxDepth := depth + args + temps
+	maxDepth := depth + args + temps.
+	"For detail see libgst/comp.c"
+	maxDepth := maxDepth + (1 bitShift: 2"DEPTH_SCALE") - 1.
+	maxDepth := maxDepth bitShift: -2"DEPTH_SCALE".
+	maxDepth :=  maxDepth + 1.
 	args > 31 ifTrue: [self error: 'Method can''t take more than 31 parameter'].
 	temps > 63 ifTrue: [self error: 'Method can''t have more than 63 temps'].
 	maxDepth > 63 ifTrue: [self error: 'Method can''t have a call stack with more than 63 of depth'].

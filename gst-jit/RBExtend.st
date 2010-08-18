@@ -31,6 +31,15 @@ STInST.RBMethodNode extend [
 	ScopeChecker visitMethod: self in: aBehavior
     ]
 
+    translate [
+	^Translator visitNode: self interpretOn: LightningInterpreter.
+    ]
+
+    jitMethodIn: aBehavior [
+	self checkScopeIn: aBehavior.
+	^self translate interp method.
+    ]
+
     numTemp [
         ^self scope usedBinding size - self arguments size
     ]

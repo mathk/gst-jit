@@ -9,13 +9,17 @@
   <test>
     <filein>tests/ScopeTest.st</filein>
     <filein>tests/TranslatorTest.st</filein>
+    <filein>tests/JitMethodTest.st</filein>
+    
     <file>tests/ScopeTest.st</file>
     <file>tests/TranslatorTest.st</file>
+    <file>tests/JitMethodTest.st</file>
     <sunit>
       Jit.ScopeTest
       Jit.BehaviorScopeTest
       Jit.ScopeCheckerTest
       Jit.TranslatorTest
+      Jit.JitMethodTest
     </sunit>
   </test>
 

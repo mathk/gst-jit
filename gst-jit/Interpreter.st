@@ -119,7 +119,10 @@ Interpreter subclass: LightningInterpreter [
 
     methodEpilog [
 	"Free context and return to the caller ..."
-	
+	self state assemble.
+	self method
+	    buildHeaderDepth: self stackCount numArg: numArg numTemp: numTemp;
+	    jitState: self state
     ]
 
     pop [
