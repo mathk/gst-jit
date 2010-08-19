@@ -28,16 +28,21 @@ STInST.RBMethodNode extend [
     ]
     
     checkScopeIn: aBehavior [
-	ScopeChecker visitMethod: self in: aBehavior
+	Jit.ScopeChecker visitMethod: self in: aBehavior
     ]
 
     translate [
-	^Translator visitNode: self interpretOn: LightningInterpreter.
+	^Jit.Translator visitNode: self interpretOn: LightningInterpreter.
     ]
 
     jitMethodIn: aBehavior [
+	| method |
 	self checkScopeIn: aBehavior.
-	^self translate interp method.
+	method := self translate interp method.
+	method descriptor: MethodInfo new.
+	method selector: self selector.
+	"method methodClass: aBehavior."
+	^method
     ]
 
     numTemp [
