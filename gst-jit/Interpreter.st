@@ -111,6 +111,7 @@ Interpreter subclass: LightningInterpreter [
 
     methodProlog [
 	self state
+	    prolog;
 	    movI: Lightning.R0 fromP: Lightning.CJitState primGstThisContextOOP;
 	    loadP: Lightning.R0 fromReg: Lightning.R0
 
@@ -119,7 +120,9 @@ Interpreter subclass: LightningInterpreter [
 
     methodEpilog [
 	"Free context and return to the caller ..."
-	self state assemble.
+	self state
+	    ret;
+	    assemble.
 	self method
 	    buildHeaderDepth: self stackCount numArg: numArg numTemp: numTemp;
 	    jitState: self state

@@ -1,5 +1,7 @@
 Object subclass: A [
     | a b c |
+    
+    test []
 ]
 
 TestCase subclass: TranslatorTest [
@@ -21,7 +23,15 @@ TestCase subclass: TranslatorTest [
 	| method |
 	method := (STInST.RBParser parseMethod: 'foo: r | e d | e := 12. d:= e').
 	method jitMethodIn: A.
-	self assert: method selector = #foo:
-	   
+	self assert: method selector = #foo:.
+	
+    ]
+
+    testCall [
+	| method |
+	method := (STInST.RBParser parseMethod: 'foo | e d | e := 12. d:= e') jitMethodIn: A.
+	method jitState printAddr.
+	A methodDictionary at: #foo put: method.
+	A new foo
     ]
 ]
