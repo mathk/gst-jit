@@ -20,10 +20,12 @@ TestCase subclass: TranslatorTest [
     ]
 
     testMethodTranslate [
-	| method |
+	| method jitMethod |
 	method := (STInST.RBParser parseMethod: 'foo: r | e d | e := 12. d:= e').
-	method jitMethodIn: A.
+	jitMethod := method jitMethodIn: A.
 	self assert: method selector = #foo:.
+	self assert: jitMethod selector = #foo:.
+	self assert: jitMethod literals = #(12)
 	
     ]
 

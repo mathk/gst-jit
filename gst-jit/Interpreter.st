@@ -84,7 +84,7 @@ Interpreter subclass: LightningInterpreter [
 
     literals: anArray [
 	self method
-	    literals: anArray
+	    literals: anArray asArray
     ]
 
     stackCount [
@@ -113,6 +113,7 @@ Interpreter subclass: LightningInterpreter [
 	self state
 	    prolog;
 	    movI: Lightning.R0 fromP: Lightning.CJitState primGstThisContextOOP;
+	    loadP: Lightning.R0 fromReg: Lightning.R0;
 	    loadP: Lightning.R0 fromReg: Lightning.R0
 
 	"Fetch the JitMethod and put it in the R1 register"
@@ -234,6 +235,7 @@ Interpreter subclass: LightningInterpreter [
 	    ulong: self stackDisplacementBase;
 	    loadUL: reg
 	    fromReg: reg
+	    and: Lightning.R0
     ]
 
     loadSp: reg [
