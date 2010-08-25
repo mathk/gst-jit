@@ -16,7 +16,7 @@ TestCase subclass: TranslatorTest [
 	    
 	| ligtningInterp |
 	ligtningInterp := (Translator visitNode: node interpretOn: LightningInterpreter) interp.
-	ligtningInterp state assemble; dump: 'assemblTest'
+	ligtningInterp state assemble
     ]
 
     testMethodTranslate [
@@ -35,5 +35,13 @@ TestCase subclass: TranslatorTest [
 	method jitState printAddr.
 	A methodDictionary at: #foo put: method.
 	A new foo
+    ]
+
+    testReturn [
+
+	| method |
+	method := (STInST.RBParser parseMethod: 'foo ^12') jitMethodIn: A.
+	A methodDictionary at: #foo put: method.
+	A new foo printNl
     ]
 ]

@@ -57,6 +57,11 @@ STInST.RBProgramNodeVisitor subclass: Translator [
 	anAssignmentNode variable slot emitStore: interp.
 	interp pop.
     ]
+    
+    acceptReturnNode: aReturnNode [
+	super acceptReturnNode: aReturnNode.
+	aReturnNode scope emitReturn: interp
+    ]
 
     acceptVariableNode: aVariableNode [
 	<category: 'visitor-double dispatching'>

@@ -111,6 +111,18 @@ Scope subclass: ContextScope [
 	<category: 'testing'>
 	^true
     ]
+
+    emitReturn: anInterpreter [
+	anInterpreter returnTop
+    ]
+]
+
+ContextScope subclass: BlockScope [
+
+    emitReturn: anInterpreter [
+	anInterpreter returnBlockTop
+    ]
+
 ]
 
 Scope subclass: BehaviorScope [

@@ -65,6 +65,10 @@ STInST.RBProgramNode extend [
 	<category: 'accessing'>
 	^properties ifNil: [properties := Dictionary new].
     ]
+
+    scope [
+	^self parent scope
+    ]
  ]
 
 STInST.RBValueNode extend [
