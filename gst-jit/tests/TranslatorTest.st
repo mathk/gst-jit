@@ -32,16 +32,13 @@ TestCase subclass: TranslatorTest [
     testCall [
 	| method |
 	method := (STInST.RBParser parseMethod: 'foo | e d | e := 12. d:= e') jitMethodIn: A.
-	method jitState printAddr.
+	method jitState dump: 'assemblyTest'.
 	A methodDictionary at: #foo put: method.
 	A new foo
     ]
 
     testReturn [
-
-	| method |
-	method := (STInST.RBParser parseMethod: 'foo ^12') jitMethodIn: A.
-	A methodDictionary at: #foo put: method.
+	A methodDictionary at: #foo put: ((STInST.RBParser parseMethod: 'foo ^12') jitMethodIn: A).
 	A new foo printNl
     ]
 ]

@@ -109,8 +109,11 @@ Interpreter subclass: LightningInterpreter [
     methodProlog [
 	self state
 	    prolog.
-	self loadGstThisContextOop: Lightning.R0
-	"Fetch the JitMethod and put it in the R1 register"
+	self loadGstThisContextOop: Lightning.R0.
+	"spOffset is not lazily set for the time being"
+	self state movI: Lightning.R1 fromUL: numTemp.
+	self storeSp: Lightning.R1.
+	
     ]
 
     methodEpilog [
@@ -169,6 +172,7 @@ Interpreter subclass: LightningInterpreter [
 	self state addI: sp to: sp ulong: 1.
 	self storeSp: sp.
 	self state
+	    mulI: sp to: sp uint: self state sizeOfOop;
 	    addI: sp to: sp ulong: self stackDisplacementBase;
 	    storeRegP: sp and: Lightning.R0 fromReg: reg
     ]
@@ -183,6 +187,7 @@ Interpreter subclass: LightningInterpreter [
 
     popIntoInstanceVariable: anIndex [
 	self popCount
+
     ]
 
     pushCount [
@@ -210,7 +215,8 @@ Interpreter subclass: LightningInterpreter [
 	    finishUL: self primGstUnwindContextAddr.
 	"We reaload the context since we unwind it"
 	self loadGstThisContextOop: Lightning.R0.
-	self storeStackTop: Lightning.V0    
+	self storeStackTop: Lightning.V0.
+	
 	" 
 	 if UNCOMMON (!unwind_method ())
 	 {
@@ -222,6 +228,7 @@ Interpreter subclass: LightningInterpreter [
     loadStackTop: reg [
 	self loadSp: reg.
 	self state
+	    mulI: reg to: reg uint: self state sizeOfOop;
 	    addI: reg
 	    to: reg
 	    ulong: self stackDisplacementBase;
@@ -235,6 +242,7 @@ Interpreter subclass: LightningInterpreter [
 	spReg := reg = Lightning.R1 ifTrue: [Lightning.R2] ifFalse: [Lightning.R1].
 	self loadSp: spReg.
 	self state
+	    mulI: spReg to: spReg uint: self state sizeOfOop;
 	    addI: spReg
 	    to: spReg
 	    ulong: self stackDisplacementBase;
@@ -247,14 +255,17 @@ Interpreter subclass: LightningInterpreter [
 	self state
 	    loadUL: reg
 	    fromReg: Lightning.R0
-	    im: self spDisplacement
+	    im: self spDisplacement;
+	    toInt: reg
     ]
 
     storeSp: reg [
 	self state
+	    fromInt: reg;
 	    storeImUL: self spDisplacement
 	    and: Lightning.R0
-	    fromReg: reg
+	    fromReg: reg;
+	    toInt: reg
     ]
 
     loadGstThisContextOop: reg [
@@ -265,15 +276,15 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     tempDisplacement: offset [
-	^(MethodContext allInstVarNames size + offset) * self state sizeOfOop
+	^((MethodContext allInstVarNames size + offset) * self state sizeOfOop) + self state sizeOfHeader
     ]
 
     spDisplacement [
-	^(MethodContext indexOfInstVar: 'sp') * self state sizeOfOop
+	^(((MethodContext indexOfInstVar: 'sp') - 1) * self state sizeOfOop) + self state sizeOfHeader
     ]
 
     stackDisplacementBase [
-	^(MethodContext allInstVarNames size) * self state sizeOfOop
+	^((MethodContext allInstVarNames size + numArg) * self state sizeOfOop) + self state sizeOfHeader
     ]
 
     primGstUnwindContextAddr [
