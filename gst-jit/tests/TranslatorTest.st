@@ -38,7 +38,9 @@ TestCase subclass: TranslatorTest [
     ]
 
     testReturn [
-	A methodDictionary at: #foo put: ((STInST.RBParser parseMethod: 'foo ^12') jitMethodIn: A).
+	| method |
+	method := (STInST.RBParser parseMethod: 'foo ^12') jitMethodIn: A.
+	A methodDictionary at: #foo put: method.
 	A new foo printNl
     ]
 ]

@@ -139,10 +139,6 @@ Interpreter subclass: LightningInterpreter [
 	    fromReg: Lightning.R0
 	    im: (self tempDisplacement: anOffset).
 	self privatePushReg: Lightning.R2
-	"Here we:
-	 1) fetch the context Normaly it is R0
-	 2) fetch the object at TEMP_BASE + index offset in the context
-	 3) push the object ins the context at sp of the context"
     ]
 
     pushLiteral: index [
@@ -174,7 +170,8 @@ Interpreter subclass: LightningInterpreter [
 	self state
 	    mulI: sp to: sp uint: self state sizeOfOop;
 	    addI: sp to: sp ulong: self stackDisplacementBase;
-	    storeRegP: sp and: Lightning.R0 fromReg: reg
+	    storeRegP: sp and: Lightning.R0 fromReg: reg.
+	
     ]
 
     popIntoTemporary: anOffset [
@@ -229,9 +226,7 @@ Interpreter subclass: LightningInterpreter [
 	self loadSp: reg.
 	self state
 	    mulI: reg to: reg uint: self state sizeOfOop;
-	    addI: reg
-	    to: reg
-	    ulong: self stackDisplacementBase;
+	    addI: reg to: reg ulong: self stackDisplacementBase;
 	    loadUL: reg
 	    fromReg: reg
 	    and: Lightning.R0
@@ -243,9 +238,7 @@ Interpreter subclass: LightningInterpreter [
 	self loadSp: spReg.
 	self state
 	    mulI: spReg to: spReg uint: self state sizeOfOop;
-	    addI: spReg
-	    to: spReg
-	    ulong: self stackDisplacementBase;
+	    addI: spReg to: spReg ulong: self stackDisplacementBase;
 	    storeRegUL: spReg
 	    and: Lightning.R0
 	    fromReg: reg
