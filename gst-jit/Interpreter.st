@@ -142,7 +142,6 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     pushLiteral: index [
-
 	self state
 	    fetchOop: Lightning.R1
 	    fromObjectReg: Lightning.R0
@@ -157,6 +156,11 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     pushReceiver [
+	self state
+	    loadUL: Lightning.R1
+	    fromReg: Lightning.R0
+	    im: self receiverDisplacement.
+	self privatePushReg: Lightning.R1
     ]
 
     privatePushReg: reg [
@@ -273,7 +277,11 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     spDisplacement [
-	^(((MethodContext indexOfInstVar: 'sp') - 1) * self state sizeOfOop) + self state sizeOfHeader
+	^(((ContextPart indexOfInstVar: 'sp') - 1) * self state sizeOfOop) + self state sizeOfHeader
+    ]
+
+    receiverDisplacement [
+	^(((ContextPart indexOfInstVar: 'receiver') - 1) * self state sizeOfOop) + self state sizeOfHeader
     ]
 
     stackDisplacementBase [

@@ -52,6 +52,10 @@ STInST.RBMethodNode extend [
     numArg [
         ^self arguments size
     ]
+
+    isInline [
+	
+    ]
 ]
 
 
@@ -80,5 +84,61 @@ STInST.RBValueNode extend [
 
     literalIndex: i [
 	self properties at: #literalIndex put: i
+    ]
+]
+
+STInST.BlockNode extend [
+    
+    isInline [
+	(parent isMessage and: [parent isInline]) ifTrue: [^ true].
+	^ false
+    ]
+]
+
+STInST.RBMessageNode extend [
+    
+    isInline [
+	<category: 'testing'>
+	self isInlineIfTrue ifTrue: [^true].
+	self isInlineIfTrueFalse ifTrue: [^true].
+	self isInlineIfFalse ifTrue: [^true].
+	self isInlineIfFalseTrue ifTrue: [^true].
+	^false
+    ]
+    
+    isInlineIfTrue [
+	<category: 'testing'>
+	self selector = #ifTrue: ifFalse: [^false].
+	^self isInlineIfOneArg
+    ]
+
+    isInlineIfFalse [
+	<category: 'testing'>
+	self selector = #ifFalse: ifFalse: [^false].
+	^self isInlineIfOneArg
+    ]
+
+    isInlineIfTrueFalse [
+	<category: 'testing'>
+	self selector = #ifTrue:ifFalse: ifFalse: [^false].
+	^self isInlineIfTwoArg
+    ]
+
+    isInlineIfFalseTrue [
+	<category: 'testing'>
+	self selector = #ifFalse:ifTrue: ifFalse: [^false].
+	^self isInlineIfTwoArg
+    ]
+
+    isInlineIfOneArg [
+	<category: 'private testing'>
+	^self arguments first isBlock and: [
+	    self arguments first argmuents isEmpty ]
+    ]
+
+    isInlineIfTwoArg [
+	<category: 'private testing'>
+	^(self arguments allSatisfy: [:node | node isBlock and: [node argmuents isEmpty]])
+
     ]
 ]
