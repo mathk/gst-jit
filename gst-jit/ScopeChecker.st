@@ -1,6 +1,6 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 
-STInST.RBProgramNodeVisitor subclass: ScopeChecker [
+AbstractVisitor subclass: ScopeChecker [
     | scope literals |
 
     ScopeChecker class >> visitMethod: aNode in: aClass [
@@ -59,6 +59,12 @@ STInST.RBProgramNodeVisitor subclass: ScopeChecker [
     acceptLiteralNode: aLiteralNode [
 	literals addLast: aLiteralNode value.
 	aLiteralNode literalIndex: (literals indexOf: aLiteralNode value)
+    ]
+
+    accpetInlineBlock: aBlockNode [
+	self visitTemporaries: aBlockNode arguments.
+	aBlockNode arguments do: [:each | self visitNode: each ].
+	self visitNode: aBlockNode body
     ]
 
     visitArgument: aVariableNode [

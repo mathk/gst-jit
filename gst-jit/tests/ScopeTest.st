@@ -79,5 +79,13 @@ TestCase subclass: ScopeCheckerTest [
 	self assert: (scope lookup: 'arg1') notNil.
 	self assert: (scope lookup: 'arg2') notNil
     ]
+
+    
+    testInlineIf [
+	| scope |
+	scope := (STInST.RBParser parseMethod: 'foo true ifTrue: [ | foobar | false. ^foobar]') checkScopeIn: A; scope.
+	self assert: (scope lookup: 'foobar') offset == 0.
+	self assert: (scope lookup: 'foobar') notNil
+    ]
 ]
 

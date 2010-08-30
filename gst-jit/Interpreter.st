@@ -13,6 +13,14 @@ Object subclass: Interpreter [
     jumpTo: label [
     ]
 
+    jumpIfTrue: label [
+	
+    ]
+
+    label: aSymbol [
+	
+    ]
+
     pop [
     ]
 
@@ -59,12 +67,30 @@ Object subclass: Interpreter [
 Interpreter subclass: LightningInterpreter [
 
     "R0 designate the MethodContext"
-    | numTemp numArg state method stackCount currentStackCount |
+    | numTemp numArg state method stackCount currentStackCount uniqueLabel |
 
     LightningInterpreter class >> new [
 	^(super new)
 	    stackCount: 0;
 	    yourself
+    ]
+
+    uniqueLabel [
+	uniqueLabel ifNil: [uniqueLabel := OrderedCollection new: 10].
+    ]
+
+    uniqueLabel: aSymbol [
+	| currentSymbol prefix |
+	currentSymbol := aSymbol asString.
+	prefix := 0.
+	
+	[self uniqueLabel includes: currentSymbol]
+	    whileTrue: [
+		currentSymbol := currentSymbol, prefix.
+		prefix := prefix + 1.
+	    ].
+	self uniqueLabel add: currentSymbol.
+	^currentSymbol asSymbol
     ]
 
     numArg: anInteger [
@@ -226,6 +252,26 @@ Interpreter subclass: LightningInterpreter [
 	 "
     ]
 
+    jumpTo: label if: aBool [
+	self loadStackTop: Lightning.R2.
+	aBool 
+           ifTrue: [self loadTrue: Lightning.R1]
+	   ifFalse: [self loadFalse: Lightning.R1].
+	self state jumpTo: label if: Lightning.R2 equal: Lightning.R1
+    ]
+
+    label: aSymbol [
+	self state jumpLabel: aSymbol
+    ]
+
+    loadTrue: reg [
+	self state movI: reg fromP: true
+    ]
+
+    loadFalse: reg [
+	self state movI: reg fromP: false
+    ]
+
     loadStackTop: reg [
 	self loadSp: reg.
 	self state
@@ -267,7 +313,7 @@ Interpreter subclass: LightningInterpreter [
 
     loadGstThisContextOop: reg [
 	self state
-	    movI: reg fromP: Lightning.CJitState primGstThisContextOOP;
+	    movI: reg fromUL: Lightning.CJitState primGstThisContextOOP;
 	    loadP: reg fromReg: reg;
 	    loadP: reg fromReg: reg
     ]

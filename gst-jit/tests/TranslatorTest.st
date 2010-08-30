@@ -43,4 +43,5 @@ TestCase subclass: TranslatorTest [
 	A methodDictionary at: #foo put: method.
 	A new foo printNl
     ]
+
 ]

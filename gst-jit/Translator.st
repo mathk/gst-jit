@@ -1,5 +1,5 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
-STInST.RBProgramNodeVisitor subclass: Translator [
+AbstractVisitor subclass: Translator [
     | interp interpClass |
 		
     Translator class >> visitNode: aNode interpretOn: interpreterClass  [
@@ -67,6 +67,16 @@ STInST.RBProgramNodeVisitor subclass: Translator [
 	<category: 'visitor-double dispatching'>
 	"Push the variable on the stack context"
 	aVariableNode slot emitPush: interp
+    ]
+
+    acceptInlineIfTrueMessage: aMessageNode [
+	| endLabel |
+	self visitNode: aMessageNode receiver.
+	endLabel := interp uniqueLabel: #endIf.
+	interp jumpTo: endLabel if: false.
+	self visitNode: aMessageNode arguments.
+	interp label: endLabel
+	
     ]
 
     visitArgument: aVariableNode [

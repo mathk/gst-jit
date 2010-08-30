@@ -87,7 +87,7 @@ STInST.RBValueNode extend [
     ]
 ]
 
-STInST.BlockNode extend [
+STInST.RBBlockNode extend [
     
     isInline [
 	(parent isMessage and: [parent isInline]) ifTrue: [^ true].
@@ -133,12 +133,12 @@ STInST.RBMessageNode extend [
     isInlineIfOneArg [
 	<category: 'private testing'>
 	^self arguments first isBlock and: [
-	    self arguments first argmuents isEmpty ]
+	    self arguments first arguments isEmpty ]
     ]
 
     isInlineIfTwoArg [
 	<category: 'private testing'>
-	^(self arguments allSatisfy: [:node | node isBlock and: [node argmuents isEmpty]])
+	^(self arguments allSatisfy: [:node | node isBlock and: [node arguments isEmpty]])
 
     ]
 ]
