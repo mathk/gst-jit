@@ -17,6 +17,10 @@ Object subclass: Interpreter [
 	
     ]
 
+    jumpTo: label if: aBool [
+	
+    ]
+
     label: aSymbol [
 	
     ]
@@ -261,7 +265,7 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     jumpTo: label [
-	
+	self state jumpTo: label
     ]
 
     label: aSymbol [
