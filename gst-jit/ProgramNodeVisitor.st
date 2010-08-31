@@ -9,7 +9,7 @@ STInST.RBProgramNodeVisitor subclass: AbstractVisitor [
 	super acceptMessageNode: aMessageNode 
     ]
 
-    accepInlinetIfTrueMessage: aMessageNode [
+    acceptInlineIfTrueMessage: aMessageNode [
 	<category: 'visitor-double dispatching'>
 	self acceptInlineIf: aMessageNode
     ]

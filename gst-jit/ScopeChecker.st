@@ -57,11 +57,13 @@ AbstractVisitor subclass: ScopeChecker [
     ]
 
     acceptLiteralNode: aLiteralNode [
+	<category: 'visitor-double dispatching'>
 	literals addLast: aLiteralNode value.
 	aLiteralNode literalIndex: (literals indexOf: aLiteralNode value)
     ]
 
     accpetInlineBlock: aBlockNode [
+	<category: 'visitor-double dispatching'>
 	self visitTemporaries: aBlockNode arguments.
 	aBlockNode arguments do: [:each | self visitNode: each ].
 	self visitNode: aBlockNode body

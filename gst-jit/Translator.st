@@ -70,13 +70,41 @@ AbstractVisitor subclass: Translator [
     ]
 
     acceptInlineIfTrueMessage: aMessageNode [
+	self emitInlineIfOneArg: aMessageNode jumpIf: false
+    ]
+
+    acceptInlineIfFalseMessage: aMessageNode [
+	self emitInlineIfOneArg: aMessageNode jumpIf: true
+    ]
+
+    acceptInlineIfFalseTrueMessage: aMessageNode [
+	self emitInlineIfTwoArg: aMessageNode jumpIf: true
+    ]
+
+    acceptInlineIfTrueFalseMessage: aMessageNode [
+	self emitInlineIfTwoArg: aMessageNode jumpIf: false
+    ]
+
+    emitInlineIfOneArg: aMessageNode jumpIf: bool [
 	| endLabel |
 	self visitNode: aMessageNode receiver.
 	endLabel := interp uniqueLabel: #endIf.
-	interp jumpTo: endLabel if: false.
-	self visitNode: aMessageNode arguments.
+	interp jumpTo: endLabel if: bool.
+	self visitNode: aMessageNode arguments first.
 	interp label: endLabel
-	
+    ]
+
+    emitInlineIfTwoeArg: aMessageNode jumpIf: bool [
+	| end else |
+	self visitNode: aMessageNode receiver.
+	endLabel := interp uniqueLabel: #endIf.
+	elseLabel := interp uniqueLabel: #elseIf.
+	interp jumpTo: else if: bool.
+	self visitNode: aMessageNode arguments first.
+	interp jumpTo: end.
+	interp label: else.
+	self visitNode: aMessageNode arguments second.
+	interp label: end
     ]
 
     visitArgument: aVariableNode [

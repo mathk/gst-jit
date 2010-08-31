@@ -76,7 +76,7 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     uniqueLabel [
-	uniqueLabel ifNil: [uniqueLabel := OrderedCollection new: 10].
+	^uniqueLabel ifNil: [uniqueLabel := OrderedCollection new: 10].
     ]
 
     uniqueLabel: aSymbol [
@@ -144,9 +144,7 @@ Interpreter subclass: LightningInterpreter [
 
     methodEpilog [
 	"Free context and return to the caller ..."
-	self state
-	    ret;
-	    assemble.
+	self state assemble.
 	self method
 	    buildHeaderDepth: self stackCount numArg: numArg numTemp: numTemp;
 	    jitState: self state
@@ -243,7 +241,7 @@ Interpreter subclass: LightningInterpreter [
 	"We reaload the context since we unwind it"
 	self loadGstThisContextOop: Lightning.R0.
 	self storeStackTop: Lightning.V0.
-	
+	self state ret
 	" 
 	 if UNCOMMON (!unwind_method ())
 	 {
@@ -257,7 +255,13 @@ Interpreter subclass: LightningInterpreter [
 	aBool 
            ifTrue: [self loadTrue: Lightning.R1]
 	   ifFalse: [self loadFalse: Lightning.R1].
-	self state jumpTo: label if: Lightning.R2 equal: Lightning.R1
+	
+	self state jumpTo: label if: Lightning.R2 equal: Lightning.R1.
+	
+    ]
+
+    jumpTo: label [
+	
     ]
 
     label: aSymbol [
