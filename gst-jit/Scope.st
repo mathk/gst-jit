@@ -100,7 +100,8 @@ Scope subclass: ContextScope [
 	    assignOffset;
 	    yourself.
 	aVariableNode slot: slot.
-	self usedBinding add: aVariableNode name
+	self = slot scope ifTrue: [
+	    self usedBinding add: aVariableNode name ]
     ]
 
     nextOffset [
@@ -121,6 +122,19 @@ ContextScope subclass: BlockScope [
 
     emitReturn: anInterpreter [
 	anInterpreter returnBlockTop
+    ]
+
+    assignOffset: aVariableNode [
+	| slot |
+	"We only assign an offset to temp that it is used"
+	super assignOffset: aVariableNode.
+	slot := (self lookup: aVariableNode name).
+	slot scope isContext and: [slot scope ~= self]
+            ifTure: [
+	        slot := BlockScope for: self outerSlot: slot
+	    ]
+	aVariableNode slot: slot.
+	
     ]
 
 ]
@@ -275,6 +289,23 @@ Slot subclass: ContextSlot [
     isContext [
 	<category: 'testing'>
 	^true
+    ]
+]
+
+Slot subclass: BlockSlot [
+    "I am a slot the designate an outer slot from the home context"
+    | outerSlot |
+
+    BlockSlot class >> for: scope outerSlot: aSlot [
+	^self for: scope; outerSlot: aSlot; yourself
+    ]
+
+    outerSlot: aSlot [
+	outerSlot := aSlot
+    ]
+
+    emitPush: anInterpreter [
+	anInterpreter pushTemp: self from: 
     ]
 ]
 

@@ -62,6 +62,14 @@ AbstractVisitor subclass: ScopeChecker [
 	aLiteralNode literalIndex: (literals indexOf: aLiteralNode value)
     ]
 
+    acceptBlock: aBlockNode [
+	scope := BlockScope attachedTo: scope.
+	literals := aBlockNode literals.
+	super acceptBlockNode: aBlockNode.
+	aBlockNode scope: scope.
+	scope := scope parentScope
+    ]
+
     accpetInlineBlock: aBlockNode [
 	<category: 'visitor-double dispatching'>
 	self visitTemporaries: aBlockNode arguments.

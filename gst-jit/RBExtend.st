@@ -89,6 +89,10 @@ STInST.RBValueNode extend [
 
 STInST.RBBlockNode extend [
     
+    literals [
+	^self properties at: #literals ifAbsentPut:[OrderedSet new]
+    ]
+
     isInline [
 	(parent isMessage and: [parent isInline]) ifTrue: [^ true].
 	^ false
