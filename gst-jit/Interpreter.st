@@ -25,6 +25,9 @@ Object subclass: Interpreter [
 	
     ]
 
+    dup [
+    ]
+
     pop [
     ]
 
@@ -38,15 +41,19 @@ Object subclass: Interpreter [
 
     ]
 
-    pushTemporary: anOffset [
+    pushTemp: anOffset [
 	self subclassResponssability
+    ]
+
+    pushTemp: offset fromScopeAt: envParentCount [
+	
     ]
 
     pushLiteral: index [
 
     ]
 
-    popIntoTemporary: anOffset [
+    popIntoTemp: anOffset [
 
     ]
 
@@ -161,10 +168,25 @@ Interpreter subclass: LightningInterpreter [
 	self popCount
     ]
 
+    dup [
+	self loadStackTop: Lightning.R1.
+	self privatePushReg: Lightning.R1
+    ]
+
     pushTemp: anOffset [
 	self state
 	    loadUL: Lightning.R2
 	    fromReg: Lightning.R0
+	    im: (self tempDisplacement: anOffset).
+	self privatePushReg: Lightning.R2
+    ]
+
+    pushTemp: offset fromScopeAt: envParentCount [
+	self state movR: Lightning.R1 fromUL: Lightning.R0.
+	1 to: envParentCount do: [self loadOuterObjectCxt: Lightning.R1 startingAt: Lightning.R1].
+	self state
+	    loadUL: Lightning.R2
+	    fromReg: Lightning.R1
 	    im: (self tempDisplacement: anOffset).
 	self privatePushReg: Lightning.R2
     ]
@@ -206,7 +228,7 @@ Interpreter subclass: LightningInterpreter [
 	
     ]
 
-    popIntoTemporary: anOffset [
+    popIntoTemp: anOffset [
 	self popCount
     ]
 
@@ -324,6 +346,16 @@ Interpreter subclass: LightningInterpreter [
 	    movI: reg fromUL: Lightning.CJitState primGstThisContextOOP;
 	    loadP: reg fromReg: reg;
 	    loadP: reg fromReg: reg
+    ]
+
+    loadOuterObjectCxt: regDst startingAt: regSrc [
+	self state fetchOop: regDst fromObjectReg: regSrc at: self outerContextDisplacement.
+	self loadP: regDst fromReg:regDst
+	
+    ]
+
+    outerContextDisplacement [
+	^((BlockContext indexOfinstVar: 'outerContext') - 1)* self state sizeOfOop) + self state sizeOfHeader.
     ]
 
     tempDisplacement: offset [

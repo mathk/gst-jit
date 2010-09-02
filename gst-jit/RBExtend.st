@@ -53,9 +53,6 @@ STInST.RBMethodNode extend [
         ^self arguments size
     ]
 
-    isInline [
-	
-    ]
 ]
 
 
@@ -88,7 +85,16 @@ STInST.RBValueNode extend [
 ]
 
 STInST.RBBlockNode extend [
-    
+
+    scope [
+	^self properties at: #scope ifAbsent:[
+	    self error: 'You need to pass throw the ScopeChecker']
+    ]
+
+    scope: aScope [
+	self properties at: #scope put: aScope
+    ]
+
     literals [
 	^self properties at: #literals ifAbsentPut:[OrderedSet new]
     ]

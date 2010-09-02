@@ -87,5 +87,19 @@ TestCase subclass: ScopeCheckerTest [
 	self assert: (scope lookup: 'foobar') offset == 0.
 	self assert: (scope lookup: 'foobar') notNil
     ]
+
+    testBlock [
+	| methodNode blockSlot |
+	
+	methodNode := (STInST.RBParser parseMethod: 'foo | i | [ | foobar | i := i + 1. ^foobar]') checkScopeIn: A.
+	blockSlot := (methodNode body statements first body statements first variable slot).
+	self assert: (methodNode scope lookup: 'i') notNil.
+	self assert: (methodNode scope lookup: 'i') offset = 0.
+	self assert: blockSlot isBlock.
+	self assert: blockSlot offset = 0.
+	self assert: (methodNode body statements first scope lookup: 'foobar') isContext.
+	self assert: (methodNode body statements first scope lookup: 'foobar') notNil.
+	self assert: (methodNode body statements first scope lookup: 'foobar') offset = 0
+    ]
 ]
 

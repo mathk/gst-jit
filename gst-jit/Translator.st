@@ -50,12 +50,28 @@ AbstractVisitor subclass: Translator [
 	interp pushLiteral: aLiteralNode literalIndex
     ]
 
+    acceptCascadeNode: aCascadeNode [
+	<category: 'visitor-double dispatching'>
+	self visitNode: aCascadeNode receiver.
+	aCascadeNode messages allButLastDo: [:node |
+	    interp dup.
+	    self visitNode: node
+	].
+	self visitNode: aCascadeNode messages last
+    ]
+
     acceptAssignmentNode: anAssignmentNode [
 	<category: 'visitor-double dispatching'>
 	"Store the variable into the tempSlot of the context"
 	self visitNode: anAssignmentNode value.
 	anAssignmentNode variable slot emitStore: interp.
 	interp pop.
+    ]
+
+    acceptArrayConstructorNode: anArrayNode [
+	
+	anArrayNode body statements size.
+	"... Continue HERE..."
     ]
     
     acceptReturnNode: aReturnNode [
@@ -86,19 +102,19 @@ AbstractVisitor subclass: Translator [
     ]
 
     emitInlineIfOneArg: aMessageNode jumpIf: bool [
-	| endLabel |
+	| end |
 	self visitNode: aMessageNode receiver.
-	endLabel := interp uniqueLabel: #endIf.
-	interp jumpTo: endLabel if: bool.
+	end := interp uniqueLabel: #endIf.
+	interp jumpTo: end if: bool.
 	self visitNode: aMessageNode arguments first.
-	interp label: endLabel
+	interp label: end
     ]
 
-    emitInlineIfTwoeArg: aMessageNode jumpIf: bool [
+    emitInlineIfTwoArg: aMessageNode jumpIf: bool [
 	| end else |
 	self visitNode: aMessageNode receiver.
-	endLabel := interp uniqueLabel: #endIf.
-	elseLabel := interp uniqueLabel: #elseIf.
+	end := interp uniqueLabel: #endIf.
+	else := interp uniqueLabel: #elseIf.
 	interp jumpTo: else if: bool.
 	self visitNode: aMessageNode arguments first.
 	interp jumpTo: end.

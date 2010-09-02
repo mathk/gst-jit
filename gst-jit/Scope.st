@@ -70,6 +70,11 @@ Object subclass: Scope [
     createSlot [
 	^ self defaultSlotClass for: self
     ]
+
+    distanceTo: aScope [
+	self = aScope ifTrue: [^0].
+	^(self parentScope distanceTo: aScope) + 1
+    ]
 ]
 
 Scope subclass: ContextScope [
@@ -129,10 +134,10 @@ ContextScope subclass: BlockScope [
 	"We only assign an offset to temp that it is used"
 	super assignOffset: aVariableNode.
 	slot := (self lookup: aVariableNode name).
-	slot scope isContext and: [slot scope ~= self]
-            ifTure: [
-	        slot := BlockScope for: self outerSlot: slot
-	    ]
+	(slot scope isContext and: [slot scope ~= self])
+            ifTrue: [
+	        slot := BlockSlot for: self outerSlot: slot
+	    ].
 	aVariableNode slot: slot.
 	
     ]
@@ -228,6 +233,11 @@ Object subclass: Slot [
 	<category: 'testing'>
 	^false
     ]
+
+    isBlock [
+	<category: 'testing'>
+	^false
+    ]
     
     name [
 	<category: 'accessing'>
@@ -297,7 +307,7 @@ Slot subclass: BlockSlot [
     | outerSlot |
 
     BlockSlot class >> for: scope outerSlot: aSlot [
-	^self for: scope; outerSlot: aSlot; yourself
+	^(self for: scope) outerSlot: aSlot; yourself
     ]
 
     outerSlot: aSlot [
@@ -305,7 +315,16 @@ Slot subclass: BlockSlot [
     ]
 
     emitPush: anInterpreter [
-	anInterpreter pushTemp: self from: 
+	anInterpreter pushTemp: self offset fromScopeAt: (self scope distanceTo: outerSlot scope)
+    ]
+    
+    isBlock [
+	<category: 'testing'>
+	^true
+    ]
+
+    offset [
+	^outerSlot offset
     ]
 ]
 
