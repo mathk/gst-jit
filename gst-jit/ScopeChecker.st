@@ -36,6 +36,14 @@ AbstractVisitor subclass: ScopeChecker [
 	scope := parentScope
     ]
 
+    accpetArrayConstructorNode: anArrayNode [
+	literals addLast: #new:.
+	literals addLast: Array binding.
+	anArrayNode literalArrayIndex: (literals indexOf: Array binding)
+	anArrayNode literalNewColonIndex: (literals indexOf: #new:)
+	super accpetArrayConstructorNode: anArrayNode
+    ]
+
     acceptMethodNode: aMethodNode [
 	<category: 'visitor-double dispatching'>
 	scope := ContextScope attachedTo: scope.

@@ -54,10 +54,9 @@ Object subclass: Interpreter [
     ]
 
     popIntoTemp: anOffset [
-
     ]
 
-    send [
+    send: literalIndex numArg: argCount [
     ]
 
     storeIntoInstance: anIndex [
@@ -171,6 +170,12 @@ Interpreter subclass: LightningInterpreter [
     dup [
 	self loadStackTop: Lightning.R1.
 	self privatePushReg: Lightning.R1
+    ]
+    
+    send: literalIndex numArg: argCount [
+	self state 
+	    prepare: 4;
+	    finish: self primGstSendmessageInternalAddr.
     ]
 
     pushTemp: anOffset [
@@ -378,5 +383,11 @@ Interpreter subclass: LightningInterpreter [
 	<category: 'primitive'>
 
 	<primitive: VMpr_GstUnwindContextAddr_ptr>
+    ]
+
+    primGstSendmessageInternalAddr [
+	<category: 'primitive'>
+
+	<primitive: VMpr_GstSendMessageInternalAddr_ptr>
     ]
 ]

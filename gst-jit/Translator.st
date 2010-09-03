@@ -65,13 +65,19 @@ AbstractVisitor subclass: Translator [
 	"Store the variable into the tempSlot of the context"
 	self visitNode: anAssignmentNode value.
 	anAssignmentNode variable slot emitStore: interp.
-	interp pop.
+	interp pop
     ]
 
     acceptArrayConstructorNode: anArrayNode [
 	
-	anArrayNode body statements size.
-	"... Continue HERE..."
+	interp pushLiteral: anArrayNode literalArrayIndex.
+	interp pushLiteral: anArrayNode literalSizeIndex.
+	interp send: anArrayNode literalNewColonIndex numArg: 1.
+	
+	anArrayNode body statements doWithIndex: [:each :i |
+	    self visitNode: each.
+	    interp popIntoInstanceVariable: i
+	]
     ]
     
     acceptReturnNode: aReturnNode [

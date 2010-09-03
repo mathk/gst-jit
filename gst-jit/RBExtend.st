@@ -84,6 +84,36 @@ STInST.RBValueNode extend [
     ]
 ]
 
+STInST.RBArrayConstructorNode extend [
+
+    literalArrayIndex [
+	^self properties at: #literalArrayIndex ifAbsent:[
+	    self error: 'You need to pass throw the ScopeChecker']
+    ]
+
+    literalArrayIndex: i [
+	self properties at: #literalArrayIndex put: i
+    ]
+
+    literalNewColonIndex [
+	^self properties at: #literalNewColonIndex ifAbsent:[
+	    self error: 'You need to pass throw the ScopeChecker']
+    ]
+
+    literalNewColonIndex: i [
+	self properties at: #literalNewColonIndex put: i
+    ]
+
+    literalSizeIndex [
+	^self properties at: #literalSizeIndex ifAbsent:[
+	    self error: 'You need to pass throw the ScopeChecker']
+    ]
+
+    literalSizeIndex: i [
+	self properties at: #literalSizeIndex put: i
+    ]  
+]
+
 STInST.RBBlockNode extend [
 
     scope [
