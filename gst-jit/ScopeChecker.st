@@ -40,7 +40,7 @@ AbstractVisitor subclass: ScopeChecker [
 	literals addLast: #new:.
 	literals addLast: Array binding.
 	anArrayNode literalArrayIndex: (literals indexOf: Array binding)
-	anArrayNode literalNewColonIndex: (literals indexOf: #new:)
+	anArrayNode literalNewColonIndex: (literals indexOf: #new:).
 	super accpetArrayConstructorNode: anArrayNode
     ]
 

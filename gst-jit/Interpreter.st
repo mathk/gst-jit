@@ -173,9 +173,36 @@ Interpreter subclass: LightningInterpreter [
     ]
     
     send: literalIndex numArg: argCount [
+	| return |
+	return := self uniqueLabel: #sendReturn.
 	self state 
-	    prepare: 4;
-	    finish: self primGstSendmessageInternalAddr.
+	    movI: Lightning.R1 fromIp: return;
+	    storeImUL: self nativeIpDisplacement
+	    and: Lightning.R0
+	    fromReg: Lightning.R1;
+	    prepare: 4.
+
+	"method_class"
+	self loadStackAt: argCount into: Lightning.R1.
+	self state fetchClassOop: Lightning.R2 fromOopReg: Lightning.R1.
+	self state pushargPtr: Lightning.R2
+
+	"receiver"
+	self state pushargPtr: Lightning.R1.
+
+	"sendArgs"
+	self state movI: Lightning.R1 ulong: argCount.
+	self state pusgargUL: Lightning.R1.
+
+	"sendSelector"
+	self loadLiteral: literalIndex into: Lightning.R1.
+	self state pushargPtr: Lightning.R1.
+	
+	self state
+	    finish: self primGstSendmessageInternalAddr;
+	    ret.
+	self jumpLabel: return.
+	self state prolog.
     ]
 
     pushTemp: anOffset [
@@ -192,21 +219,12 @@ Interpreter subclass: LightningInterpreter [
 	self state
 	    loadUL: Lightning.R2
 	    fromReg: Lightning.R1
-	    im: (self tempDisplacement: anOffset).
+	    im: (self tempDisplacement: offset).
 	self privatePushReg: Lightning.R2
     ]
 
     pushLiteral: index [
-	self state
-	    fetchOop: Lightning.R1
-	    fromObjectReg: Lightning.R0
-	    at: (MethodContext indexOfInstVar: 'method');
-	    fetchOop: Lightning.R1
-	    fromOopReg: Lightning.R1
-	    at: (JitMethod indexOfInstVar: 'literals');
-	    fetchOop: Lightning.R1
-	    fromOopReg: Lightning.R1
-	    at: index.
+	self loadLiteral: index into: Lightning.R1.
 	self privatePushReg: Lightning.R1
     ]
 
@@ -303,12 +321,36 @@ Interpreter subclass: LightningInterpreter [
 	self state movI: reg fromP: true
     ]
 
+    loadLiteral: index into: reg [
+	self state
+	    fetchOop: reg
+	    fromObjectReg: Lightning.R0
+	    at: (MethodContext indexOfInstVar: 'method');
+	    fetchOop: reg
+	    fromOopReg: reg
+	    at: (JitMethod indexOfInstVar: 'literals');
+	    fetchOop: reg
+	    fromOopReg: reg
+	    at: index.
+    ]
+
     loadFalse: reg [
 	self state movI: reg fromP: false
     ]
 
     loadStackTop: reg [
 	self loadSp: reg.
+	self state
+	    mulI: reg to: reg uint: self state sizeOfOop;
+	    addI: reg to: reg ulong: self stackDisplacementBase;
+	    loadUL: reg
+	    fromReg: reg
+	    and: Lightning.R0
+    ]
+
+    loadStackAt: index into: reg [
+	self loadSp: reg.
+	self stat subI: reg to: reg ulong: index.
 	self state
 	    mulI: reg to: reg uint: self state sizeOfOop;
 	    addI: reg to: reg ulong: self stackDisplacementBase;
@@ -360,7 +402,7 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     outerContextDisplacement [
-	^((BlockContext indexOfinstVar: 'outerContext') - 1)* self state sizeOfOop) + self state sizeOfHeader.
+	^(((BlockContext indexOfinstVar: 'outerContext') - 1) * self state sizeOfOop) + self state sizeOfHeader.
     ]
 
     tempDisplacement: offset [
@@ -369,6 +411,10 @@ Interpreter subclass: LightningInterpreter [
 
     spDisplacement [
 	^(((ContextPart indexOfInstVar: 'sp') - 1) * self state sizeOfOop) + self state sizeOfHeader
+    ]
+
+    nativeIpDisplacement [
+	^(((ContextPart indexOfInstVar: 'nativeIP') - 1) * self state sizeOfOop) + self state sizeOfHeader
     ]
 
     receiverDisplacement [
