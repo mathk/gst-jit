@@ -176,7 +176,9 @@ Interpreter subclass: LightningInterpreter [
 	| return |
 	return := self uniqueLabel: #sendReturn.
 	self state 
-	    movI: Lightning.R1 fromIp: return;
+	    movI: Lightning.R1 fromIp: return.
+
+	self state
 	    storeImUL: self nativeIpDisplacement
 	    and: Lightning.R0
 	    fromReg: Lightning.R1;
@@ -202,6 +204,7 @@ Interpreter subclass: LightningInterpreter [
 	    finishUL: self primGstSendmessageInternalAddr;
 	    ret.
 	self state jumpLabel: return.
+
 	self state prolog.
     ]
 
