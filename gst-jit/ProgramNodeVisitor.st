@@ -6,6 +6,10 @@ STInST.RBProgramNodeVisitor subclass: AbstractVisitor [
 	aMessageNode isInlineIfFalse ifTrue: [^self acceptInlineIfFalseMessage: aMessageNode].
 	aMessageNode isInlineIfTrueFalse ifTrue: [^self acceptInlineIfTrueFalseMessage: aMessageNode].
 	aMessageNode isInlineIfFalseTrue ifTrue: [^self acceptInlineIfFalseTrueMessage: aMessageNode].
+	self acceptSimpleMessageNode: aMessageNode 
+    ]
+
+    acceptSimpleMessageNode: aMessageNode [
 	super acceptMessageNode: aMessageNode 
     ]
 

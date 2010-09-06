@@ -136,6 +136,15 @@ STInST.RBBlockNode extend [
 ]
 
 STInST.RBMessageNode extend [
+
+    literalSelectorIndex [
+	^self properties at: #literalSelectorIndex ifAbsent:[
+	    self error: 'You need to pass throw the ScopeChecker']
+    ]
+
+    literalSelectorIndex: i [
+	self properties at: #literalSelectorIndex put: i
+    ]
     
     isInline [
 	<category: 'testing'>

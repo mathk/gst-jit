@@ -47,6 +47,8 @@ TestCase subclass: TranslatorTest [
 	| method |
 	method := (STInST.RBParser parseMethod: 'foo true ifTrue: [ ^12]. ^34') jitMethodIn: A.
 	A methodDictionary at: #foo put: method.
+	method jitState dump: 'assemblyTest'.
+	A new foo printNl.
 	self assert: A new foo = 12.
 	method := (STInST.RBParser parseMethod: 'foo false ifTrue: [ ^12]. ^34') jitMethodIn: A.
 	A methodDictionary at: #foo put: method.
@@ -57,5 +59,14 @@ TestCase subclass: TranslatorTest [
 	method := (STInST.RBParser parseMethod: 'foo false ifTrue: [ ^12 ] ifFalse: [^42]') jitMethodIn: A.
 	A methodDictionary at: #foo put: method.
 	self assert: A new foo = 42
+    ]
+
+    testSend [
+	| method |
+	method := (STInST.RBParser parseMethod: 'foo ^34 + 6') jitMethodIn: A.
+	A methodDictionary at: #foo put: method.
+	method jitState dump: 'assemblyTest'.
+	"self assert: A new foo = 40."
+
     ]
 ]

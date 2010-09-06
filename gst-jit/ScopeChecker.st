@@ -70,6 +70,12 @@ AbstractVisitor subclass: ScopeChecker [
 	aLiteralNode literalIndex: (literals indexOf: aLiteralNode value)
     ]
 
+    acceptSimpleMessageNode: aMessageNode [
+	literals addLast: aMessageNode selector.
+	aMessageNode literalSelectorIndex: (literals indexOf: aMessageNode selector).
+	super acceptSimpleMessageNode: aMessageNode
+    ]
+
     acceptBlockNode: aBlockNode [
 	scope := BlockScope attachedTo: scope.
 	literals := aBlockNode literals.

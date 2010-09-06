@@ -79,6 +79,11 @@ AbstractVisitor subclass: Translator [
 	    interp popIntoInstanceVariable: i
 	]
     ]
+
+    acceptSimpleMessageNode: aMessageNode [
+	super acceptSimpleMessageNode: aMessageNode.
+	interp send: aMessageNode literalSelectorIndex numArgs: aMessageNode selector numArgs
+    ]
     
     acceptReturnNode: aReturnNode [
 	super acceptReturnNode: aReturnNode.

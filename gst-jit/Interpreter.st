@@ -172,7 +172,7 @@ Interpreter subclass: LightningInterpreter [
 	self privatePushReg: Lightning.R1
     ]
     
-    send: literalIndex numArg: argCount [
+    send: literalIndex numArgs: argCount [
 	| return |
 	return := self uniqueLabel: #sendReturn.
 	self state 
@@ -185,23 +185,23 @@ Interpreter subclass: LightningInterpreter [
 	"method_class"
 	self loadStackAt: argCount into: Lightning.R1.
 	self state fetchClassOop: Lightning.R2 fromOopReg: Lightning.R1.
-	self state pushargPtr: Lightning.R2
+	self state pushargPtr: Lightning.R2.
 
 	"receiver"
 	self state pushargPtr: Lightning.R1.
 
 	"sendArgs"
-	self state movI: Lightning.R1 ulong: argCount.
-	self state pusgargUL: Lightning.R1.
+	self state movI: Lightning.R1 fromUL: argCount.
+	self state pushargUL: Lightning.R1.
 
 	"sendSelector"
 	self loadLiteral: literalIndex into: Lightning.R1.
 	self state pushargPtr: Lightning.R1.
 	
 	self state
-	    finish: self primGstSendmessageInternalAddr;
+	    finishUL: self primGstSendmessageInternalAddr;
 	    ret.
-	self jumpLabel: return.
+	self state jumpLabel: return.
 	self state prolog.
     ]
 
@@ -318,7 +318,11 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     loadTrue: reg [
-	self state movI: reg fromP: true
+	self state movI: reg fromObjectP: true
+    ]
+
+    loadFalse: reg [
+	self state movI: reg fromObjectP: false
     ]
 
     loadLiteral: index into: reg [
@@ -334,10 +338,6 @@ Interpreter subclass: LightningInterpreter [
 	    at: index.
     ]
 
-    loadFalse: reg [
-	self state movI: reg fromP: false
-    ]
-
     loadStackTop: reg [
 	self loadSp: reg.
 	self state
@@ -350,7 +350,7 @@ Interpreter subclass: LightningInterpreter [
 
     loadStackAt: index into: reg [
 	self loadSp: reg.
-	self stat subI: reg to: reg ulong: index.
+	self state subI: reg to: reg ulong: index.
 	self state
 	    mulI: reg to: reg uint: self state sizeOfOop;
 	    addI: reg to: reg ulong: self stackDisplacementBase;
