@@ -217,7 +217,7 @@ Interpreter subclass: LightningInterpreter [
 	
 	self state
 	    finishUL: self primGstSendmessageInternalAddr.
-	"Fix that right now is it wrong"
+	"Fix that right now is it wrong "
 	self storeSp: Lightning.V0
 	self state
 	    ret.
