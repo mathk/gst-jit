@@ -173,9 +173,12 @@ Interpreter subclass: LightningInterpreter [
     ]
     
     send: literalIndex numArgs: argCount [
-	| return |
+	| return isInt isIntEnd |
 	return := self uniqueLabel: #sendReturn.
-	self state 
+	isInt := self uniqueLabel: #isInt.
+	isIntEnd := self uniqueLabel: #isIntEnd.
+	self state
+	    breakpoint;
 	    movI: Lightning.R1 fromIp: return.
 
 	self state
@@ -185,9 +188,19 @@ Interpreter subclass: LightningInterpreter [
 	    prepare: 4.
 
 	"method_class"
+	
 	self loadStackAt: argCount into: Lightning.R1.
-	self state fetchClassOop: Lightning.R2 fromOopReg: Lightning.R1.
-	self state pushargPtr: Lightning.R2.
+	self state
+	    andI: Lightning.R2 to: Lightning.R1 ulong: 1;
+	    jumpTo: isInt if: Lightning.R2 imEqualUL: 1;
+	    fetchClassOop: Lightning.R2 fromOopReg: Lightning.R1;
+	    pushargPtr: Lightning.R2;
+	    jumpTo: isIntEnd;
+	    jumpLabel: isInt;
+	    movI: Lightning.R2 fromObjectP: SmallInteger;
+	    pushargPtr: Lightning.R2;
+	    jumpLabel: isIntEnd.
+	
 
 	"receiver"
 	self state pushargPtr: Lightning.R1.
@@ -203,8 +216,10 @@ Interpreter subclass: LightningInterpreter [
 	self state
 	    finishUL: self primGstSendmessageInternalAddr;
 	    ret.
-	self state jumpLabel: return.
+	"return to the interpreter"
 
+	self state jumpLabel: return.
+	self state breakpoint.
 	self state prolog.
     ]
 
@@ -289,11 +304,12 @@ Interpreter subclass: LightningInterpreter [
 	self loadStackTop: Lightning.V0.
 	self state 
 	    prepare: 0;
-	    finishUL: self primGstUnwindMethodAddr.
+	    finishUL: self primGstUnwindContextAddr.
 	"We reaload the context since we unwind it"
 	self loadGstThisContextOop: Lightning.R0.
 	self storeStackTop: Lightning.V0.
-	self state ret
+	self state ret.
+
 	" 
 	 if UNCOMMON (!unwind_method ())
 	 {
