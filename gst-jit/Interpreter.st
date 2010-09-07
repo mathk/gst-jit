@@ -181,6 +181,8 @@ Interpreter subclass: LightningInterpreter [
 	    breakpoint;
 	    movI: Lightning.R1 fromIp: return.
 
+	self loadSp: Lightning.V0.
+	self state subI: Lightning.V0 to: Lightning.V0 ulong: argCount.
 	self state
 	    storeImUL: self nativeIpDisplacement
 	    and: Lightning.R0
@@ -214,7 +216,10 @@ Interpreter subclass: LightningInterpreter [
 	self state pushargPtr: Lightning.R1.
 	
 	self state
-	    finishUL: self primGstSendmessageInternalAddr;
+	    finishUL: self primGstSendmessageInternalAddr.
+	"Fix that right now is it wrong"
+	self storeSp: Lightning.V0
+	self state
 	    ret.
 	"return to the interpreter"
 
