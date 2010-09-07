@@ -289,7 +289,7 @@ Interpreter subclass: LightningInterpreter [
 	self loadStackTop: Lightning.V0.
 	self state 
 	    prepare: 0;
-	    finishUL: self primGstUnwindContextAddr.
+	    finishUL: self primGstUnwindMethodAddr.
 	"We reaload the context since we unwind it"
 	self loadGstThisContextOop: Lightning.R0.
 	self storeStackTop: Lightning.V0.
@@ -432,6 +432,12 @@ Interpreter subclass: LightningInterpreter [
 	<category: 'primitive'>
 
 	<primitive: VMpr_GstUnwindContextAddr_ptr>
+    ]
+
+    primGstUnwindMethodAddr [
+	<category: 'primitive'>
+
+	<primitive: VMpr_GstUnwindMethodAddr_ptr>
     ]
 
     primGstSendmessageInternalAddr [
