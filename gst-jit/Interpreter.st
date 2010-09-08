@@ -220,14 +220,15 @@ Interpreter subclass: LightningInterpreter [
 	    finishUL: self primGstSendmessageInternalAddr.
 	"Fix that right now is it wrong "
 	self state movR: Lightning.R0 fromUL: Lightning.V1.
-	self storeSp: Lightning.V0
+	self storeSp: Lightning.V0.
 	self state
 	    ret.
 	"return to the interpreter"
 
 	self state jumpLabel: return.
-	self state breakpoint.
 	self state prolog.
+	self state breakpoint.
+	self loadGstThisContextOop: Lightning.R0
     ]
 
     pushTemp: anOffset [
