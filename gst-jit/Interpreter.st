@@ -182,6 +182,7 @@ Interpreter subclass: LightningInterpreter [
 	    movI: Lightning.R1 fromIp: return.
 
 	self loadSp: Lightning.V0.
+	self state movR: Lightning.V1 fromUL: Lightning.R0.
 	self state subI: Lightning.V0 to: Lightning.V0 ulong: argCount.
 	self state
 	    storeImUL: self nativeIpDisplacement
@@ -218,6 +219,7 @@ Interpreter subclass: LightningInterpreter [
 	self state
 	    finishUL: self primGstSendmessageInternalAddr.
 	"Fix that right now is it wrong "
+	self state movR: Lightning.R0 fromUL: Lightning.V1.
 	self storeSp: Lightning.V0
 	self state
 	    ret.
