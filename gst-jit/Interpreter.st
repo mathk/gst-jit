@@ -179,6 +179,10 @@ Interpreter subclass: LightningInterpreter [
 	isIntEnd := self uniqueLabel: #isIntEnd.
 	self state
 	    breakpoint;
+	    prepare: 0;
+	    finishUL: self primGstSyncSpAddr.
+	self loadGstThisContextOop: Lightning.R0.
+	self state
 	    movI: Lightning.R1 fromIp: return.
 
 	self loadSp: Lightning.V0.
@@ -462,6 +466,12 @@ Interpreter subclass: LightningInterpreter [
 	<category: 'primitive'>
 
 	<primitive: VMpr_GstUnwindMethodAddr_ptr>
+    ]
+
+    primGstSyncSpAddr [
+	<category: 'primitive'>
+
+	<primitive: VMpr_GstSyncSpAddr_ptr>
     ]
 
     primGstSendmessageInternalAddr [
