@@ -42,7 +42,11 @@ AbstractVisitor subclass: Translator [
 
     acceptSequenceNode: aSequenceNode [
 	<category: 'visitor-double dispatching'>
-	super acceptSequenceNode: aSequenceNode
+	self visitArguments: aSequenceNode temporaries.
+	aSequenceNode statements 
+            do: [:each | self visitNode: each]
+	    separetedBy: [inter pop]
+
     ]
 
     acceptLiteralNode: aLiteralNode [

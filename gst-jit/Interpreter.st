@@ -153,7 +153,6 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     methodEpilog [
-	"Free context and return to the caller ..."
 	self state assemble.
 	self method
 	    buildHeaderDepth: self stackCount numArg: numArg numTemp: numTemp;
@@ -178,7 +177,6 @@ Interpreter subclass: LightningInterpreter [
 	isInt := self uniqueLabel: #isInt.
 	isIntEnd := self uniqueLabel: #isIntEnd.
 	self state
-	    breakpoint;
 	    prepare: 0;
 	    finishUL: self primGstSyncSpAddr.
 	self loadGstThisContextOop: Lightning.R0.
@@ -231,7 +229,6 @@ Interpreter subclass: LightningInterpreter [
 
 	self state jumpLabel: return.
 	self state prolog.
-	self state breakpoint.
 	self loadGstThisContextOop: Lightning.R0
     ]
 
