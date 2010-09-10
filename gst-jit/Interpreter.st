@@ -96,7 +96,7 @@ Interpreter subclass: LightningInterpreter [
 	
 	[self uniqueLabel includes: currentSymbol]
 	    whileTrue: [
-		currentSymbol := currentSymbol, prefix.
+		currentSymbol := aSymbol asString, prefix asString.
 		prefix := prefix + 1.
 	    ].
 	self uniqueLabel add: currentSymbol.
@@ -184,6 +184,8 @@ Interpreter subclass: LightningInterpreter [
 	    movI: Lightning.R1 fromIp: return.
 
 	self loadSp: Lightning.V0.
+
+	"FIXME: Make the interpreter not override the sp if we are in a jitcontext"
 	self state movR: Lightning.V1 fromUL: Lightning.R0.
 	self state subI: Lightning.V0 to: Lightning.V0 ulong: argCount.
 	self state
@@ -192,10 +194,10 @@ Interpreter subclass: LightningInterpreter [
 	    fromReg: Lightning.R1;
 	    prepare: 4.
 
-	"method_class"
-	
+	"method_class"	
 	self loadStackAt: argCount into: Lightning.R1.
 	self state
+	    "IS_INT(receiver)? _gst_small_integer_oop : OOP_CLASS(receiver)"
 	    andI: Lightning.R2 to: Lightning.R1 ulong: 1;
 	    jumpTo: isInt if: Lightning.R2 imEqualUL: 1;
 	    fetchClassOop: Lightning.R2 fromOopReg: Lightning.R1;
@@ -220,7 +222,8 @@ Interpreter subclass: LightningInterpreter [
 	
 	self state
 	    finishUL: self primGstSendmessageInternalAddr.
-	"Fix that right now is it wrong "
+
+	"FIXME: Make the interpreter not override the sp if we are in a jitcontext"
 	self state movR: Lightning.R0 fromUL: Lightning.V1.
 	self storeSp: Lightning.V0.
 	self state
