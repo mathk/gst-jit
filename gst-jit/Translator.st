@@ -45,7 +45,7 @@ AbstractVisitor subclass: Translator [
 	self visitArguments: aSequenceNode temporaries.
 	aSequenceNode statements 
             do: [:each | self visitNode: each]
-	    separetedBy: [inter pop]
+	    separatedBy: [interp pop]
 
     ]
 
@@ -69,7 +69,6 @@ AbstractVisitor subclass: Translator [
 	"Store the variable into the tempSlot of the context"
 	self visitNode: anAssignmentNode value.
 	anAssignmentNode variable slot emitStore: interp.
-	interp pop
     ]
 
     acceptArrayConstructorNode: anArrayNode [

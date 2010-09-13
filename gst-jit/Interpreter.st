@@ -77,12 +77,20 @@ Object subclass: Interpreter [
 Interpreter subclass: LightningInterpreter [
 
     "R0 designate the MethodContext"
-    | numTemp numArg state method stackCount currentStackCount uniqueLabel |
+    | numTemp numArg state method stackCount currentStackCount uniqueLabel isSpInitialize |
 
     LightningInterpreter class >> new [
 	^(super new)
 	    stackCount: 0;
 	    yourself
+    ]
+
+    isSpInitialize [
+	^isSpInitialize ifNil: [isSpInitialize := false]
+    ]
+
+    isSpInitilize: aBool [
+	isSpInitialize := aBool
     ]
 
     uniqueLabel [
@@ -147,8 +155,6 @@ Interpreter subclass: LightningInterpreter [
 	    prolog.
 	self loadGstThisContextOop: Lightning.R0.
 	"spOffset is not lazily set for the time being"
-	self state movI: Lightning.R1 fromUL: numTemp.
-	self storeSp: Lightning.R1.
 	
     ]
 
@@ -177,6 +183,7 @@ Interpreter subclass: LightningInterpreter [
 	isInt := self uniqueLabel: #isInt.
 	isIntEnd := self uniqueLabel: #isIntEnd.
 	self state
+	    breakpoint;
 	    prepare: 0;
 	    finishUL: self primGstSyncSpAddr.
 	self loadGstThisContextOop: Lightning.R0.
@@ -271,14 +278,26 @@ Interpreter subclass: LightningInterpreter [
 	| sp offset |
 	self pushCount.
 	sp := reg = Lightning.R1 ifTrue:[ Lightning.R2 ] ifFalse: [ Lightning.R1 ].
-	self loadSp: sp.
-	self state addI: sp to: sp ulong: 1.
-	self storeSp: sp.
+	self loadSpForPush: sp.
 	self state
 	    mulI: sp to: sp uint: self state sizeOfOop;
 	    addI: sp to: sp ulong: self stackDisplacementBase;
 	    storeRegP: sp and: Lightning.R0 fromReg: reg.
 	
+    ]
+
+    loadSpForPush: spReg [
+	self isSpInitialize 
+            ifFalse:[
+		self state movI: spReg fromUL: numTemp.
+		self storeSp: spReg.
+		self isSpInitilize: true.
+	    ]
+	    ifTrue: [
+		self loadSp: spReg.
+		self state addI: spReg to: spReg ulong: 1.
+		self storeSp: spReg
+	    ]
     ]
 
     popIntoTemp: anOffset [
