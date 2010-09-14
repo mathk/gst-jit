@@ -183,7 +183,6 @@ Interpreter subclass: LightningInterpreter [
 	isInt := self uniqueLabel: #isInt.
 	isIntEnd := self uniqueLabel: #isIntEnd.
 	self state
-	    breakpoint;
 	    prepare: 0;
 	    finishUL: self primGstSyncSpAddr.
 	self loadGstThisContextOop: Lightning.R0.

@@ -56,8 +56,8 @@ AbstractVisitor subclass: Translator [
 
     acceptCascadeNode: aCascadeNode [
 	<category: 'visitor-double dispatching'>
-	self visitNode: aCascadeNode receiver.
-	aCascadeNode messages allButLastDo: [:node |
+	self visitNode: aCascadeNode messages first receiver.
+	aCascadeNode messages allButLast do: [:node |
 	    interp dup.
 	    self visitNode: node
 	].

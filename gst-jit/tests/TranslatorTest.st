@@ -65,8 +65,15 @@ TestCase subclass: TranslatorTest [
 	A methodDictionary at: #foo put: method.
 	self assert: A new foo = 36.
 	method := (STInST.RBParser parseMethod: 'foo ^(6 raisedTo: 2) raisedTo: 2') jitMethodIn: A.
-	method jitState dump:'assemblyTest'.
 	A methodDictionary at: #foo put: method.
 	self assert: A new foo = 1296
     ]
+
+    testSendCascade [
+	| method |
+	method := (STInST.RBParser parseMethod: 'foo ^6 raisedTo: 2; yourself') jitMethodIn: A.
+	A methodDictionary at: #foo put: method.
+	self assert: A new foo = 6.
+    ]
+
 ]
