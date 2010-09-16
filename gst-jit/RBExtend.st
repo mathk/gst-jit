@@ -14,6 +14,10 @@ STInST.RBVariableNode extend [
 
 STInST.RBMethodNode extend [
 
+    jitCompiledClass [
+	^Jit.JitMethod
+    ]
+
     scope [
 	^self properties at: #scope ifAbsent:[
 	    self error: 'You need to pass throw the ScopeChecker']
@@ -116,6 +120,10 @@ STInST.RBArrayConstructorNode extend [
 
 STInST.RBBlockNode extend [
 
+    jitCompiledClass [
+	^Jit.JitBlock
+    ]
+
     scope [
 	^self properties at: #scope ifAbsent:[
 	    self error: 'You need to pass throw the ScopeChecker']
@@ -132,6 +140,25 @@ STInST.RBBlockNode extend [
     isInline [
 	(parent isMessage and: [parent isInline]) ifTrue: [^ true].
 	^ false
+    ]
+
+    numTemp [
+        ^self scope usedBinding size - self arguments size
+    ]
+
+    numArg [
+        ^self arguments size
+    ]
+
+    cleanFlag: anInteger [
+	| cleanFlag |
+	cleanFlag := self properties at: #cleanFlag ifAbsentPut: [0].
+	cleanFlag := cleanFlag max: anInteger.
+	self properties at: #cleanFlag put: cleanFlag
+    ]
+
+    cleanFlag [
+	^self properties at: #cleanFlag ifAbsentPut:[0]
     ]
 ]
 

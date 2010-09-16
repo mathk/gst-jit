@@ -16,7 +16,16 @@ Object subclass: Scope [
 	^self subclassResponsibility
     ]
 
+    scopeClass [
+	^self parentScope scopeClass
+    ]
+
     isGlobal [
+	<category: 'testing'>
+	^false
+    ]
+
+    isBlock [
 	<category: 'testing'>
 	^false
     ]
@@ -78,12 +87,16 @@ Object subclass: Scope [
 ]
 
 Scope subclass: ContextScope [
-    | usedBinding |
+    | usedBinding selfSlot |
     "I am a scope for every bindings that is inside a context.
      That is arguments and temporaries"
 
     ContextScope class >> defaultSlotClass [
 	^ContextSlot
+    ]
+
+    selfSlot [
+	^selfSlot ifNil: [selfSlot := SelfSlot for: self]
     ]
 
     usedBinding [
@@ -109,6 +122,10 @@ Scope subclass: ContextScope [
 	    self usedBinding add: aVariableNode name ]
     ]
 
+    emitPushSelf: anInterpreter [
+	anInterpreter pushReceiver
+    ]
+
     nextOffset [
 	^self usedBinding size
     ]
@@ -121,12 +138,38 @@ Scope subclass: ContextScope [
     emitReturn: anInterpreter [
 	anInterpreter returnTop
     ]
+
+    lookup: name [
+	name = 'self' ifTrue: [^self selfSlot].
+	^ super lookup: name
+    ]
 ]
 
 ContextScope subclass: BlockScope [
+    | blockNode |
 
     emitReturn: anInterpreter [
 	anInterpreter returnBlockTop
+    ]
+
+    blockNode: aBlockNode [
+	blockNode := aBlockNode
+    ]
+
+    cleanFlag: anInteger [
+	blockNode cleanFlag: anInteger.
+	self parentScope isBlock ifTrue: [
+	    self parentScope cleanFlag: anInteger - 1
+	]
+    ]
+
+    isBlock [
+	^true
+    ]
+
+    emitPushSelf: anInterpreter [
+	super emitPushSelf: anInterpreter.
+	self cleanFlag: 1
     ]
 
     assignOffset: aVariableNode [
@@ -168,6 +211,10 @@ Scope subclass: BehaviorScope [
 				self  bind: each asString ]
     ]
 
+    scopeClass [
+	^behavior
+    ]
+
     isBehavior [
 	<category: 'testing'>
 	^true
@@ -178,9 +225,9 @@ Scope subclass: GlobalScope [
     "I am a scope for binding outside of the class.
      Manly for class name and other global variable"
     | namespace |
-   
 
     GlobalScope class >> for: aNamespace [
+	
 	^(self new)
 	    namespace: aNamespace;
 	    yourself
@@ -302,6 +349,13 @@ Slot subclass: ContextSlot [
     ]
 ]
 
+Slot subclass: SelfSlot [
+
+    emitPush: anInterpreter [
+	self scope emitPushSelf: anInterpreter
+    ]
+]
+
 Slot subclass: BlockSlot [
     "I am a slot the designate an outer slot from the home context"
     | outerSlot |
@@ -315,7 +369,10 @@ Slot subclass: BlockSlot [
     ]
 
     emitPush: anInterpreter [
-	anInterpreter pushTemp: self offset fromScopeAt: (self scope distanceTo: outerSlot scope)
+	| distance |
+	distance := (self scope distanceTo: outerSlot scope).
+	anInterpreter pushTemp: self offset fromScopeAt: distance.
+	self scope cleanFlag: distance + 1
     ]
     
     isBlock [

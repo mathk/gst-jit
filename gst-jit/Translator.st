@@ -1,6 +1,6 @@
 " Hey Emacs, I want -*- tab-width: 8; -*- "
 AbstractVisitor subclass: Translator [
-    | interp interpClass |
+    | interp interpClass literals |
 		
     Translator class >> visitNode: aNode interpretOn: interpreterClass  [
 	<category: 'instance-creation'>
@@ -21,15 +21,51 @@ AbstractVisitor subclass: Translator [
     interp [
 	^interp
     ]
+
+    setupInterpFor: aNode [
+	interp := (interpClass onClass: aNode jitCompiledClass)
+	    literals: aNode literals;
+	    numArg: aNode numArg;
+	    numTemp: aNode numTemp;
+	    yourself
+    ]
+
+    acceptBlockNode: aBlockNode [
+	<category: 'visitor-double dispatching'>
+
+	| previousLiterals blockMethod |
+	previousLiterals := literals.
+	aBlockNode properties at: #previousInterp put: interp.
+	self setupInterpFor: aBlockNode.
+	literals := aBlockNode literals.
+	interp prolog.
+	super acceptBlockNode: aBlockNode.
+	interp blockEpilog: aBlockNode cleanFlag.
+	literals := previousLiterals.
+	blockMethod := interp method.
+	blockMethod flags = 0 
+            ifTrue: [
+		| block |
+		block := BlockClosure 
+                    block: blockMethod 
+	            receiver: aBlockNode scope scopeClass 
+	            outerContext: nil.
+		literals addLast: block.
+		interp pushLiteral: (literals indexOf: block)
+	    ]
+	    ifFalse: [
+		literals addLast: blockMethod.
+		interp pushLiteral: (literals indexOf: blockMethod).
+		interp makeDirtyBlock.
+	    ].
+	interp := aBlockNode properties at: #previousInterp
+    ]
  
     acceptMethodNode: aMethodNode [
 	<category: 'visitor-double dispatching'>
-	interp := interpClass new
-	    literals: aMethodNode literals;
-	    numArg: aMethodNode numArg;
-	    numTemp: aMethodNode numTemp;
-	    yourself.
-	interp methodProlog.
+	self setupInterpFor: aMethodNode.
+	literals := aMethodNode literals.
+	interp prolog.
 	super acceptMethodNode: aMethodNode.
 	aMethodNode lastIsReturn ifFalse: [interp pushReceiver; returnTop].
 	interp methodEpilog
@@ -120,7 +156,7 @@ AbstractVisitor subclass: Translator [
 	self visitNode: aMessageNode receiver.
 	end := interp uniqueLabel: #endIf.
 	interp jumpTo: end if: bool.
-	self visitNode: aMessageNode arguments first.
+	self acceptInlineBlock: aMessageNode arguments first.
 	interp label: end
     ]
 
@@ -130,10 +166,10 @@ AbstractVisitor subclass: Translator [
 	end := interp uniqueLabel: #endIf.
 	else := interp uniqueLabel: #elseIf.
 	interp jumpTo: else if: bool.
-	self visitNode: aMessageNode arguments first.
+	self acceptInlineBlock: aMessageNode arguments first.
 	interp jumpTo: end.
 	interp label: else.
-	self visitNode: aMessageNode arguments second.
+	self acceptInlineBlock: aMessageNode arguments second.
 	interp label: end
     ]
 

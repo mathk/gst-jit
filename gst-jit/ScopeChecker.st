@@ -26,16 +26,6 @@ AbstractVisitor subclass: ScopeChecker [
 	<category: 'visitor-double dispatching'>
     ]
 
-    acceptBlockNode: aBlockNode [
-        <category: 'visitor-double dispatching'>
-        
-	| parentScope |
-	parentScope := scope.
-        scope := ContextScope attachedTo: scope.
-        super acceptBlockNode: aBlockNode.
-	scope := parentScope
-    ]
-
     accpetArrayConstructorNode: anArrayNode [
 	literals addLast: #new:.
 	literals addLast: Array binding.
@@ -78,6 +68,7 @@ AbstractVisitor subclass: ScopeChecker [
 
     acceptBlockNode: aBlockNode [
 	scope := BlockScope attachedTo: scope.
+	scope blockNode: aBlockNode.
 	literals := aBlockNode literals.
 	super acceptBlockNode: aBlockNode.
 	aBlockNode scope: scope.

@@ -30,6 +30,7 @@
   <filein>ScopeChecker.st</filein>
   <filein>Scope.st</filein>
   <filein>JitMethod.st</filein>
+  <filein>JitBlock.st</filein>
 
   <file>ProgramNodeVisitor.st</file>
   <file>Translator.st</file>
@@ -38,5 +39,6 @@
   <file>ScopeChecker.st</file>
   <file>Scope.st</file>
   <file>JitMethod.st</file>
+  <file>JitBlock.st</file>
 
 </package>

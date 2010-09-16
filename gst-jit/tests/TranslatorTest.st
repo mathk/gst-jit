@@ -76,4 +76,12 @@ TestCase subclass: TranslatorTest [
 	self assert: A new foo = 6.
     ]
 
+    testCleanFlagBlock [
+	| rbMethod |
+	rbMethod := STInST.RBParser parseMethod: 'foo  | a | [[a]]'.
+	rbMethod jitMethodIn: A.
+	self assert: rbMethod body statements first body statements first cleanFlag = 3.
+	self assert: rbMethod body statements first cleanFlag = 2
+    ]
+
 ]

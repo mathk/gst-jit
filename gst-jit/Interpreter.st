@@ -49,6 +49,10 @@ Object subclass: Interpreter [
 	
     ]
 
+    makeDirtyBlock [
+	
+    ]
+
     pushLiteral: index [
 
     ]
@@ -77,12 +81,17 @@ Object subclass: Interpreter [
 Interpreter subclass: LightningInterpreter [
 
     "R0 designate the MethodContext"
-    | numTemp numArg state method stackCount currentStackCount uniqueLabel isSpInitialize |
+    | numTemp numArg state method stackCount currentStackCount uniqueLabel isSpInitialize  jitCompiledClass |
 
-    LightningInterpreter class >> new [
+    LightningInterpreter class >> onClass: aJitCompiledClass [
 	^(super new)
+	    jitCompiledClass: aJitCompiledClass;
 	    stackCount: 0;
 	    yourself
+    ]
+
+    jitCompiledClass: aBehavior [
+	jitCompiledClass := aBehavior
     ]
 
     isSpInitialize [
@@ -120,7 +129,7 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     method [
-	^method ifNil: [method := JitMethod new: 0]
+	^method ifNil: [method := jitCompiledClass new: 0]
     ]
 
     literals: anArray [
@@ -150,12 +159,10 @@ Interpreter subclass: LightningInterpreter [
 	^state ifNil: [state := Lightning.CJitState new]
     ]
 
-    methodProlog [
+    prolog [
 	self state
 	    prolog.
-	self loadGstThisContextOop: Lightning.R0.
-	"spOffset is not lazily set for the time being"
-	
+	self loadGstThisContextOop: Lightning.R0
     ]
 
     methodEpilog [
@@ -165,11 +172,28 @@ Interpreter subclass: LightningInterpreter [
 	    jitState: self state
     ]
 
+    blockEpilog: cleanFlag [
+	self state assemble.
+	self method
+	    buildHeaderDepth: self stackCount numArg: numArg numTemp: numTemp cleanFlag: cleanFlag;
+	    jitState: self state
+    ]
+
     pop [
 	self loadSp: Lightning.R1.
 	self state subI: Lightning.R1 to: Lightning.R1 ulong: 1.
 	self storeSp: Lightning.R1.
 	self popCount
+    ]
+
+    makeDirtyBlock [
+	self loadStackTop: Lightning.R1.
+	self state
+	    prepare: 1;
+	    pushargPtr: Lightning.R1;
+	    finishUL: self primGstMakeBlockClosureAddr;
+	    retval: Lightning.R1.
+	self storeStackTop: Lightning.R1
     ]
 
     dup [
@@ -183,7 +207,6 @@ Interpreter subclass: LightningInterpreter [
 	isInt := self uniqueLabel: #isInt.
 	isIntEnd := self uniqueLabel: #isIntEnd.
 	self state
-	    prepare: 0;
 	    finishUL: self primGstSyncSpAddr.
 	self loadGstThisContextOop: Lightning.R0.
 	self state
@@ -251,7 +274,7 @@ Interpreter subclass: LightningInterpreter [
 
     pushTemp: offset fromScopeAt: envParentCount [
 	self state movR: Lightning.R1 fromUL: Lightning.R0.
-	1 to: envParentCount do: [self loadOuterObjectCxt: Lightning.R1 startingAt: Lightning.R1].
+	1 to: envParentCount do: [:index | self loadOuterObjectCxt: Lightning.R1 startingAt: Lightning.R1].
 	self state
 	    loadUL: Lightning.R2
 	    fromReg: Lightning.R1
@@ -446,12 +469,12 @@ Interpreter subclass: LightningInterpreter [
 
     loadOuterObjectCxt: regDst startingAt: regSrc [
 	self state fetchOop: regDst fromObjectReg: regSrc at: self outerContextDisplacement.
-	self loadP: regDst fromReg:regDst
+	self state loadP: regDst fromReg:regDst
 	
     ]
 
     outerContextDisplacement [
-	^(((BlockContext indexOfinstVar: 'outerContext') - 1) * self state sizeOfOop) + self state sizeOfHeader.
+	^(((BlockContext indexOfInstVar: 'outerContext') - 1) * self state sizeOfOop) + self state sizeOfHeader.
     ]
 
     tempDisplacement: offset [
@@ -488,13 +511,17 @@ Interpreter subclass: LightningInterpreter [
 
     primGstSyncSpAddr [
 	<category: 'primitive'>
-
 	<primitive: VMpr_GstSyncSpAddr_ptr>
     ]
 
     primGstSendmessageInternalAddr [
 	<category: 'primitive'>
-
 	<primitive: VMpr_GstSendMessageInternalAddr_ptr>
+    ]
+
+    
+    primGstMakeBlockClosureAddr [
+	<category: 'primitive'>
+	<primitive: VMpr_GstMakeBlockClosureAddr_ptr>
     ]
 ]

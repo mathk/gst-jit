@@ -4,7 +4,8 @@ CompiledBlock subclass: JitBlock [
     | jitState |
     <shape: #byte>
 
-    buildHeaderDepth: depth numArg: args numTemp: temps cleanFlags: cleanFlags [
+    buildHeaderDepth: depth numArg: args numTemp: temps cleanFlag: cleanFlag [
+	| maxDepth |
 	maxDepth := depth + args + temps.
 	"For detail see libgst/comp.c"
 	maxDepth := maxDepth + (1 bitShift: 2"DEPTH_SCALE") - 1.
@@ -16,7 +17,7 @@ CompiledBlock subclass: JitBlock [
 	header := (((args bitShift: 5) + temps) bitShift: 6) + maxDepth.
 	header := (header bitShift: 1) + 1.
 	header := header bitShift: 8 + 5.
-	header := header + cleanFlags
+	header := header + cleanFlag
     ]
 
     jitState: aState [
