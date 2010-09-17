@@ -273,13 +273,21 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     pushTemp: offset fromScopeAt: envParentCount [
-	self state movR: Lightning.R1 fromUL: Lightning.R0.
-	1 to: envParentCount do: [:index | self loadOuterObjectCxt: Lightning.R1 startingAt: Lightning.R1].
+	self loadParentEnvIn: Lightning.R1 distance: envParentCount.
 	self state
 	    loadUL: Lightning.R2
 	    fromReg: Lightning.R1
 	    im: (self tempDisplacement: offset).
 	self privatePushReg: Lightning.R2
+    ]
+
+    storeIntoTemp: offset fromScopeAt:envParentCount [
+	self loadParentEnvIn: Lightning.R1 distance: envParentCount.
+	self loadStackTop: Lightning.R2.
+	self state
+	    storeImP: (self tempDisplacement: offset)
+	    and: Lightning.R1
+	    fromReg: Lightning.R2
     ]
 
     pushLiteral: index [
@@ -306,6 +314,11 @@ Interpreter subclass: LightningInterpreter [
 	    addI: sp to: sp ulong: self stackDisplacementBase;
 	    storeRegP: sp and: Lightning.R0 fromReg: reg.
 	
+    ]
+
+    loadParentEnvIn: reg distance: anInt [
+	self state movR: reg fromUL: Lightning.R0.
+	1 to: anInt do: [:index | self loadOuterObjectCxt: reg startingAt: reg].
     ]
 
     loadSpForPush: spReg [

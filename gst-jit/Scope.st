@@ -368,11 +368,20 @@ Slot subclass: BlockSlot [
 	outerSlot := aSlot
     ]
 
-    emitPush: anInterpreter [
+    scopeDistance [
 	| distance |
 	distance := (self scope distanceTo: outerSlot scope).
-	anInterpreter pushTemp: self offset fromScopeAt: distance.
-	self scope cleanFlag: distance + 1
+	self scope cleanFlag: distance + 1.
+	^distance
+    ]
+
+    emitPush: anInterpreter [
+	anInterpreter pushTemp: self offset fromScopeAt: self scopeDistance.
+    ]
+
+    emitStore: anInterpreter [
+	self readonly ifTrue: [ SystemExceptions.ReadOnlyObject signalOn: self reason: 'arguments are readonly' ].
+	anInterpreter storeIntoTemp: self offset fromScopeAt: self scopeDistance.
     ]
     
     isBlock [

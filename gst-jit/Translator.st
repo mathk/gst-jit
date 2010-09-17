@@ -24,7 +24,6 @@ AbstractVisitor subclass: Translator [
 
     setupInterpFor: aNode [
 	interp := (interpClass onClass: aNode jitCompiledClass)
-	    literals: aNode literals;
 	    numArg: aNode numArg;
 	    numTemp: aNode numTemp;
 	    yourself
@@ -39,10 +38,14 @@ AbstractVisitor subclass: Translator [
 	self setupInterpFor: aBlockNode.
 	literals := aBlockNode literals.
 	interp prolog.
+	interp state dump: 'assemblyTest'.
 	super acceptBlockNode: aBlockNode.
+	aBlockNode lastIsReturn ifFalse: [interp returnTop].
 	interp blockEpilog: aBlockNode cleanFlag.
+	interp literals: literals.
 	literals := previousLiterals.
 	blockMethod := interp method.
+	interp := aBlockNode properties at: #previousInterp.
 	blockMethod flags = 0 
             ifTrue: [
 		| block |
@@ -57,8 +60,7 @@ AbstractVisitor subclass: Translator [
 		literals addLast: blockMethod.
 		interp pushLiteral: (literals indexOf: blockMethod).
 		interp makeDirtyBlock.
-	    ].
-	interp := aBlockNode properties at: #previousInterp
+	    ]
     ]
  
     acceptMethodNode: aMethodNode [
@@ -67,7 +69,8 @@ AbstractVisitor subclass: Translator [
 	literals := aMethodNode literals.
 	interp prolog.
 	super acceptMethodNode: aMethodNode.
-	aMethodNode lastIsReturn ifFalse: [interp pushReceiver; returnTop].
+	aMethodNode lastIsReturn ifFalse: [interp pop;  pushReceiver; returnTop].
+	interp literals: literals.
 	interp methodEpilog
     ]
 

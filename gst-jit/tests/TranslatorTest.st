@@ -77,11 +77,17 @@ TestCase subclass: TranslatorTest [
     ]
 
     testCleanFlagBlock [
-	| rbMethod |
-	rbMethod := STInST.RBParser parseMethod: 'foo  | a | [[a]]'.
-	rbMethod jitMethodIn: A.
-	self assert: rbMethod body statements first body statements first cleanFlag = 3.
-	self assert: rbMethod body statements first cleanFlag = 2
+	| rbMethod jitMethod |
+	rbMethod := STInST.RBParser parseMethod: 'foo  | a | a:= 7. ^[[a]]'.
+	jitMethod := rbMethod jitMethodIn: A.
+	self assert: rbMethod body statements second value body statements first cleanFlag = 3.
+	self assert: rbMethod body statements second value cleanFlag = 2.
+	A methodDictionary at: #foo put: jitMethod.
+
+	"jitMethod literals second literals first jitState dump: 'assemblyTest'."
+	self assert: A new foo lass printNl.
+	"self assert: A new foo value value = 7"
+	  
     ]
 
 ]
