@@ -187,10 +187,11 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     makeDirtyBlock [
-	self loadStackTop: Lightning.R1.
+	self loadStackTop: Lightning.V1.
 	self state
+	    finishUL: self primGstSyncSpAddr;
 	    prepare: 1;
-	    pushargPtr: Lightning.R1;
+	    pushargPtr: Lightning.V1;
 	    finishUL: self primGstMakeBlockClosureAddr;
 	    retval: Lightning.R1.
 	self loadGstThisContextOop: Lightning.R0.
@@ -482,7 +483,7 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     loadOuterObjectCxt: regDst startingAt: regSrc [
-	self state fetchOop: regDst fromObjectReg: regSrc at: self outerContextDisplacement.
+	self state fetchOop: regDst fromObjectReg: regSrc at: (BlockContext indexOfInstVar: 'outerContext').
 	self state loadP: regDst fromReg:regDst
 	
     ]

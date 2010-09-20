@@ -83,10 +83,12 @@ TestCase subclass: TranslatorTest [
 	self assert: rbMethod body statements second value body statements first cleanFlag = 3.
 	self assert: rbMethod body statements second value cleanFlag = 2.
 	A methodDictionary at: #foo put: jitMethod.
-
-	"jitMethod literals second literals first jitState dump: 'assemblyTest'."
-	(A new foo value outerContext outerContext class) printNl.
-	"self assert: A new foo value value = 7"
+	self assert: A new foo class = BlockClosure.
+	self assert: A new foo value class = BlockClosure.
+	self assert: A new foo value outerContext class = BlockContext.
+	self assert: A new foo value outerContext outerContext class = MethodContext.
+	self assert: A new foo outerContext class = MethodContext.
+	self assert: A new foo value value = 7
 	  
     ]
 
