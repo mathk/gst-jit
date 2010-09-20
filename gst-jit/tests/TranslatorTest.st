@@ -85,7 +85,7 @@ TestCase subclass: TranslatorTest [
 	A methodDictionary at: #foo put: jitMethod.
 
 	"jitMethod literals second literals first jitState dump: 'assemblyTest'."
-	self assert: A new foo lass printNl.
+	(A new foo value outerContext outerContext class) printNl.
 	"self assert: A new foo value value = 7"
 	  
     ]

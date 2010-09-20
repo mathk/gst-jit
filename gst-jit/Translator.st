@@ -38,7 +38,6 @@ AbstractVisitor subclass: Translator [
 	self setupInterpFor: aBlockNode.
 	literals := aBlockNode literals.
 	interp prolog.
-	interp state dump: 'assemblyTest'.
 	super acceptBlockNode: aBlockNode.
 	aBlockNode lastIsReturn ifFalse: [interp returnTop].
 	interp blockEpilog: aBlockNode cleanFlag.

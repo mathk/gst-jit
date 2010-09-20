@@ -193,6 +193,7 @@ Interpreter subclass: LightningInterpreter [
 	    pushargPtr: Lightning.R1;
 	    finishUL: self primGstMakeBlockClosureAddr;
 	    retval: Lightning.R1.
+	self loadGstThisContextOop: Lightning.R0.
 	self storeStackTop: Lightning.R1
     ]
 
