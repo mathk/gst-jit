@@ -202,8 +202,33 @@ Interpreter subclass: LightningInterpreter [
 	self loadStackTop: Lightning.R1.
 	self privatePushReg: Lightning.R1
     ]
+
+    sendSpecialPlus [
+	| isInt |
+	"is a and b int"
+	isNotInt := self uniqueLabel: #isNotInt.
+	isNotFloat := self uniqueLabel: #isNotFloat.
+	self loadStackAt: 1 into: Lightning.R1.
+	self loadStackAt: 0 into: Lightning.R2.
+	self state 
+	    andR: Lightning.R1 to: Lightning.R1 ulong: Lightning.R2;
+	    andI: Lightning.R1 to: Lightning.R1 ulong: 1;
+	    jumpTo: isNotInt if: Lightning.R1 imEqualUL: 0;
+
+	    jumpLabel: isNotInt;
+	    "Take care int + float or float + int"
+	    jumpLabel: isNotFloat;
+	"..."
+    ]
     
     send: literalIndex numArgs: argCount [
+
+	self sendNumArg: argCount usingSelector: [:reg
+	    self loadLiteral: literalIndex into: reg
+	]
+    ]
+
+    sendNumArg: argCount usingSelector: aBlock [
 	| return isInt isIntEnd |
 	return := self uniqueLabel: #sendReturn.
 	isInt := self uniqueLabel: #isInt.
@@ -238,7 +263,6 @@ Interpreter subclass: LightningInterpreter [
 	    movI: Lightning.R2 fromObjectP: SmallInteger;
 	    pushargPtr: Lightning.R2;
 	    jumpLabel: isIntEnd.
-	
 
 	"receiver"
 	self state pushargPtr: Lightning.R1.
@@ -248,7 +272,7 @@ Interpreter subclass: LightningInterpreter [
 	self state pushargUL: Lightning.R1.
 
 	"sendSelector"
-	self loadLiteral: literalIndex into: Lightning.R1.
+	aBlock value: Lightning.R1.
 	self state pushargPtr: Lightning.R1.
 	
 	self state
@@ -426,18 +450,12 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     loadStackTop: reg [
-	self loadSp: reg.
-	self state
-	    mulI: reg to: reg uint: self state sizeOfOop;
-	    addI: reg to: reg ulong: self stackDisplacementBase;
-	    loadUL: reg
-	    fromReg: reg
-	    and: Lightning.R0
+	self loadStackAt: 0 into: reg
     ]
 
     loadStackAt: index into: reg [
 	self loadSp: reg.
-	self state subI: reg to: reg ulong: index.
+	index > 0 ifTrue: [self state subI: reg to: reg ulong: index].
 	self state
 	    mulI: reg to: reg uint: self state sizeOfOop;
 	    addI: reg to: reg ulong: self stackDisplacementBase;

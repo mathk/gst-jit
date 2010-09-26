@@ -123,7 +123,14 @@ AbstractVisitor subclass: Translator [
 
     acceptSimpleMessageNode: aMessageNode [
 	super acceptSimpleMessageNode: aMessageNode.
-	interp send: aMessageNode literalSelectorIndex numArgs: aMessageNode selector numArgs
+	self acceptSpecialSendNode: aMessageNode otherwiseDo: [
+	    
+	    interp send: aMessageNode literalSelectorIndex numArgs: aMessageNode selector numArgs
+	]
+    ]
+
+    accpetSpecialSendNode: aMessageNode otherwiseDo: aBlock [
+	aMessageNode selector = #+ ifTrue:[^interp sendSpecialPlus]
     ]
     
     acceptReturnNode: aReturnNode [
