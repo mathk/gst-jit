@@ -204,7 +204,7 @@ Interpreter subclass: LightningInterpreter [
     ]
 
     sendSpecialPlus [
-	| isInt |
+	| isNotInt isNotFloat |
 	"is a and b int"
 	isNotInt := self uniqueLabel: #isNotInt.
 	isNotFloat := self uniqueLabel: #isNotFloat.
@@ -217,13 +217,13 @@ Interpreter subclass: LightningInterpreter [
 
 	    jumpLabel: isNotInt;
 	    "Take care int + float or float + int"
-	    jumpLabel: isNotFloat;
+	    jumpLabel: isNotFloat.
 	"..."
     ]
     
     send: literalIndex numArgs: argCount [
 
-	self sendNumArg: argCount usingSelector: [:reg
+	self sendNumArg: argCount usingSelector: [:reg | 
 	    self loadLiteral: literalIndex into: reg
 	]
     ]
