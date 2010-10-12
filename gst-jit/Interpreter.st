@@ -211,10 +211,10 @@ Interpreter subclass: LightningInterpreter [
 	self loadStackAt: 1 into: Lightning.R1.
 	self loadStackAt: 0 into: Lightning.R2.
 	self state 
-	    andR: Lightning.R1 to: Lightning.R1 ulong: Lightning.R2;
-	    andI: Lightning.R1 to: Lightning.R1 ulong: 1;
+	    andR: Lightning.V1 to: Lightning.R1 ulong: Lightning.R2;
+	    andI: Lightning.V1 to: Lightning.V1 ulong: 1;
 	    jumpTo: isNotInt if: Lightning.R1 imEqualUL: 0;
-
+	    subI: Lightning.R2 to: Lightning.R2 ulong: 1;
 	    jumpLabel: isNotInt;
 	    "Take care int + float or float + int"
 	    jumpLabel: isNotFloat.
